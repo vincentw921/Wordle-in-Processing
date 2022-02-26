@@ -371,4 +371,3 @@ void brcSendWebpage(Client client) {
     String WebPage = head1+str(BRC_WebBody.length())+head2+BRC_WebBody;
     client.write(WebPage);
 }
-

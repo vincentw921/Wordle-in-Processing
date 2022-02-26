@@ -1,61 +1,42 @@
-int tileWidth;
-int guessNum;
+int tileWidth, tileHeight, guessNum;
 boolean won;
 String ans;
 Tile[][] tiles;
+color bgcolor = color(200);
 
 void setup() {
+  background(bgcolor);
   size(600,600);
   frameRate(30);
   String[] words = loadStrings("words.txt");
-  tileWidth = 500;
   guessNum = 0;
   won = false;
   ans = words[int(random(words.length))];
-  
-  tiles = new Tile[5][6];
-  int y = 50;
+  textFont(createFont("Calisto MT Bold", 120));
+  //Trebuchet MS Bold
+  //Nirmala UI Bold
+  //Segoe Script Bold
+  //println(PFont.list());
+  tiles = new Tile[6][5];
+  int ystart = 100;
+  tileWidth = (width - 50) / tiles[0].length - 5;
+  tileHeight = (height - 60 - ystart) / tiles.length - 5;
+  int y = ystart-50;
   for(Tile[] tRow : tiles){
-    y += (height - 100) / tiles.length;
-    int x = 50;
+    y += tileHeight + 10;
+    int x = 20;
     for(Tile t : tRow){
       t = new Tile(x, y);
-      x += (width - 100) / tRow.length;
+      x += tileWidth + 10;
+      t.display();
     }
   }
+  textAlign(CENTER);
+  fill(0);
+  text("Wurdel", width / 2, 100);
+  //set state of all boxes in row[numGuesses] to 1, and all before it to 2, whenever enter is pressed
 }
 
 void draw() {
-  for(Tile[] tRow : tiles){
-    for(Tile t : tRow){
-      println(
-    }
-  }
-  stroke(0);
-  strokeWeight(1);
-  brc();
-  String changed = brcChanged();
   
-  if (changed.equals("send")) {
-    if (checkGuess()) {
-      won = true;
-    }
-    guessNum++;
-  }
-  if (won) {
-    println("Congratulations: One win for you");
-  }
-  
-  if (guessNum >= 6) {
-    println("Nice Try!");
-    setup();
-  }
-}
-
-boolean checkGuess() {
-  String guess = brcValue("guess");
-  for (int i = 0; i < guess.length(); i++) {
-    
-  }
-  return guess.equals(ans);
 }
