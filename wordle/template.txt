@@ -1,0 +1,5 @@
+TYPE,TEXT,guess
+guess,LABEL,Guess
+
+TYPE,BUTTON,send
+send,LABEL,Send Guess
