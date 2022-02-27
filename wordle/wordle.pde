@@ -1,57 +1,100 @@
-int tileWidth;
-int guessNum;
+/*****************************************************************************************************
+*  ITS JUST WORDLE
+* BUT IN PROCESSING
+* WOW SO COOL
+* TO DO: Add a counter thing next to title to show the amount of guesses posssibly (not necessary
+*        Make the guess checking function, and fill in the boxes accordingly
+*        Implement the "word" part of wordle into the checking guess thing
+*        How are you supposed to format headers like this?
+******************************************************************************************************/
+
+int tileWidth, tileHeight, guessNum, charNum;
 boolean won;
 String ans;
 Tile[][] tiles;
+color bgcolor = color(200);
 
 void setup() {
+  background(bgcolor);
   size(600,600);
   frameRate(30);
   String[] words = loadStrings("words.txt");
-  tileWidth = 500;
   guessNum = 0;
+  charNum = 0;
   won = false;
   ans = words[int(random(words.length))];
+  textFont(createFont("Calisto MT Bold", 120));
   
-  tiles = new Tile[5][6];
-  int y = 50;
+  //Creates tiles
+  tiles = new Tile[6][5];
+  int ystart = 100; //starting y-coordinate of the first row
+  tileWidth = (width - 50) / tiles[0].length - 5;
+  tileHeight = (height - 65 - ystart) / tiles.length - 5;
+  int y = ystart-50;
   for(Tile[] tRow : tiles){
-    y += (height - 100) / tiles.length;
-    int x = 50;
-    for(Tile t : tRow){
-      t = new Tile(x, y);
-      x += (width - 100) / tRow.length;
+    y += tileHeight + 10;
+    int x = 20;
+    for(int j = 0; j < tRow.length; j++){
+      tRow[j] = new Tile(x, y);
+      x += tileWidth + 10;
     }
   }
+  
+  //sets status of the first row
+  for(Tile t : tiles[0]) t.STATE = 1;
+  
+  //displays tiles
+  for(Tile[] tRow : tiles){
+    for(Tile t : tRow) t.display();
+  }
+  
+  printTitle();
 }
-
-void draw() {
-  for(Tile[] tRow : tiles){
-    for(Tile t : tRow){
-      println(
-    }
-  }
-  stroke(0);
-  strokeWeight(1);
-  brc();
-  String changed = brcChanged();
-  
-  if (changed.equals("send")) {
-    if (checkGuess()) {
-      won = true;
-    }
+void keyPressed(){
+  if(key == '\n'){
+    if(charNum < 5) return;
+    
+    println("guess entered. but the functionality isnt there yet");
     guessNum++;
+    charNum = 0;
+    
+    if(guessNum == 6){
+      println("u fcked up lmao");
+      setup();
+      return;
+    }
+    for(int row = 0; row < guessNum; row++){
+      for(Tile t : tiles[row]) t.STATE = 2;
+    }
+    for(Tile t : tiles[guessNum]) t.STATE = 1;
+    
+  } else if(key == '\b'){
+    if(charNum == 0) return;
+    tiles[guessNum][charNum-1].ch = ' ';
+    charNum--;
+  } else {
+    //make sure the inputted key is from A-Z, then input that into the tile
+    if((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5){
+      tiles[guessNum][charNum].ch = Character.toUpperCase(key);
+      charNum++;
+    }
   }
-  if (won) {
-    println("Congratulations: One win for you");
-  }
-  
-  if (guessNum >= 6) {
-    println("Nice Try!");
-    setup();
+}
+void draw() {
+  background(bgcolor);
+  printTitle();
+  for(Tile[] tRow : tiles){
+    for(Tile t : tRow) t.display();
   }
 }
 
+void printTitle(){
+  textFont(createFont("Calisto MT Bold", 120));
+  textAlign(CENTER);
+  fill(0);
+  text("Wurdel", width / 2, 100);
+}
+/*
 boolean checkGuess() {
   String guess = brcValue("guess");
   for (int i = 0; i < guess.length(); i++) {
@@ -65,4 +108,4 @@ boolean checkGuess() {
     }
   }
   return guess.equals(ans);
-}
+}*/
