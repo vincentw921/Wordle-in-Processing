@@ -1,43 +1,38 @@
-class Tile {
-  color c;
-  int x,y;
-  
-  public Tile(int x, int y) {
-    this.x = x;
-    this.y = y;
-    c = color(200);
-  }
-  void display() {
-    fill(c);
-    square(x,y,tileWidth);
-  }
-}
-
-int tileWidth = width / 5;
-String ans;
+int tileWidth;
 int guessNum;
-
 boolean won;
-
+String ans;
 Tile[][] tiles;
 
 void setup() {
   size(600,600);
   frameRate(30);
   String[] words = loadStrings("words.txt");
-  ans = words[(int)random(words.length)];
-  tiles = new Tile[5][6];
+  tileWidth = 500;
   guessNum = 0;
-  
   won = false;
+  ans = words[int(random(words.length))];
+  
+  tiles = new Tile[5][6];
+  int y = 50;
+  for(Tile[] tRow : tiles){
+    y += (height - 100) / tiles.length;
+    int x = 50;
+    for(Tile t : tRow){
+      t = new Tile(x, y);
+      x += (width - 100) / tRow.length;
+    }
+  }
 }
 
 void draw() {
-  for (int i = 0; i < tiles.length; i++) {
-    for (int j = 0; j < tiles[0].length; j++) {
-      tiles[i][j].display();
+  for(Tile[] tRow : tiles){
+    for(Tile t : tRow){
+      println(
     }
   }
+  stroke(0);
+  strokeWeight(1);
   brc();
   String changed = brcChanged();
   
@@ -48,7 +43,7 @@ void draw() {
     guessNum++;
   }
   if (won) {
-    println("Congradulations: One win for you");
+    println("Congratulations: One win for you");
   }
   
   if (guessNum >= 6) {
