@@ -1,23 +1,42 @@
 class Tile {
   color c;
   int x,y,STATE;
-  //eventually use STATE to see if box is clicked on, 0 = not yet used, 1= currently being used, 2= already used
+  char ch;
+  //STATE: 0 = not yet used, 1= currently being used, 2= already used
+  
   Tile(int x, int y) {
     this.x = x;
     this.y = y;
     c = color(100);
     STATE = 0;
+    ch = ' ';
   }
-  void display() { //should not change the previously displayed boxes
+  
+  void display() {
+    //first displays the boxes (TO ADD: THE CHECK GUESS FUNCTION)
     noFill();
     strokeWeight(3);
     if(STATE == 0){
       stroke(100);
     } else if(STATE == 1){
+      strokeWeight(4);
       stroke(255);
     } else {
-      return;
+      stroke(0);
+      strokeWeight(4);
     }
     rect(x,y,tileWidth, tileHeight);
+    
+    //Then displays the characters
+    textFont(createFont("Calisto MT", tileHeight - 10));
+    textAlign(LEFT);
+    if(STATE > 0){
+      if(STATE == 1){
+        fill(0);
+      } else if(STATE == 2){
+        fill(0);
+      }
+      text(ch, x + tileWidth / 4, y + tileHeight - 15);
+    }
   }
 }
