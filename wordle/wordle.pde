@@ -94,3 +94,18 @@ void printTitle(){
   fill(0);
   text("Wurdel", width / 2, 100);
 }
+/*
+boolean checkGuess() {
+  String guess = brcValue("guess");
+  for (int i = 0; i < guess.length(); i++) {
+    for (int j = 0; j < ans.length(); j++) {
+      if (guess.charAt(i) == guess.charAt(j)) {
+        tiles[i][guessNum].c = color(255,255,0);
+      }
+    }
+    if (guess.charAt(i) == ans.charAt(i)) {
+      tiles[i][guessNum].c = color(0,255,0);
+    }
+  }
+  return guess.equals(ans);
+}*/
