@@ -59,7 +59,7 @@ void keyPressed(){
     charNum = 0;
     
     if(guessNum == 6){
-      println("u fcked up lmao");
+      println("6/6, u messed up, resetting.");
       setup();
       return;
     }
@@ -94,9 +94,9 @@ void printTitle(){
   fill(0);
   text("Wurdel", width / 2, 100);
 }
-/*
+
 boolean checkGuess() {
-  String guess = brcValue("guess");
+  String guess = ""; //obv psuedo, finding guess requieres getting the 5 characters from the 5 tiles of the row
   for (int i = 0; i < guess.length(); i++) {
     for (int j = 0; j < ans.length(); j++) {
       if (guess.charAt(i) == guess.charAt(j)) {
@@ -108,4 +108,4 @@ boolean checkGuess() {
     }
   }
   return guess.equals(ans);
-}*/
+}

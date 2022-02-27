@@ -14,17 +14,20 @@ class Tile {
   
   void display() {
     //first displays the boxes (TO ADD: THE CHECK GUESS FUNCTION)
-    noFill();
+    
     strokeWeight(3);
     if(STATE == 0){
       stroke(100);
+      c = color(200);
     } else if(STATE == 1){
       strokeWeight(4);
       stroke(255);
+      c = color(150);
     } else {
       stroke(0);
       strokeWeight(4);
     }
+    fill(c);
     rect(x,y,tileWidth, tileHeight);
     
     //Then displays the characters
