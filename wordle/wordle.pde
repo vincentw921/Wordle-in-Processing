@@ -14,8 +14,8 @@ String ans;
 Tile[][] tiles;
 color bgcolor = color(200);
 String[] inputWords, answerWords;
-
 String[] correctGuesses;
+
 
 void setup() {
   background(bgcolor);
@@ -57,12 +57,14 @@ void setup() {
 }
 
 void keyPressed() {
+  if(won) return;
   if (key == '\n') {
     if (charNum < 5) return;
 
     if (checkGuess()) {
       println("Nice, you did it");
-      setup();
+      won = true;
+      //setup();
       return;
     }
     guessNum++;
@@ -145,8 +147,11 @@ boolean checkGuess() {
     }
   }*/
   for(int i = 0; i < ans.length(); i++){
+    if(ans.charAt(i) == guess.charAt(i)) tiles[guessNum][i].STATE = State.CORRECT_PLACE;
+  }
+  for(int i = 0; i < ans.length(); i++){
     for(int j = 0; j < guess.length(); j++){
-      if(ans.charAt(i) == guess.charAt(j)){
+      if(ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE){
         tiles[guessNum][j].STATE = State.CORRECT_LETTER;
         
       }
