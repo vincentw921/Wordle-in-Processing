@@ -108,6 +108,7 @@ boolean checkGuess() {
   for (int i = 0; i < tiles[guessNum].length; i++) {
     guess += tiles[guessNum][i].ch;
   }
+  guess = guess.toLowerCase();
   boolean valid = false;
   for (String s : inputWords) {
     if (s.equals(guess)) {
@@ -116,7 +117,7 @@ boolean checkGuess() {
     }
   }
   if (!valid) {
-    println("Not Valid");
+    println("Not Valid: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.c = ' ';
       t.c = color(100);
