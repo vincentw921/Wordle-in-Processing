@@ -33,11 +33,14 @@ class Tile {
       stroke(0);
       c = color(100);
     } else if (STATE == State.CORRECT_LETTER) {
+      strokeWeight(4);
+      stroke(0);
       c = color(255,255,0);
     } else if (STATE == State.CORRECT_PLACE) {
+      strokeWeight(4);
+      stroke(0);
       c = color(0,255,0);
     } else {
-      c = bgcolor;
       stroke(255);
       strokeWeight(4);
     }

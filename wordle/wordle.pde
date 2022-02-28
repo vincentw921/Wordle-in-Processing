@@ -27,6 +27,7 @@ void setup() {
   charNum = 0;
   won = false;
   ans = answerWords[int(random(answerWords.length))];
+  println("ANSWER: " + ans);
   textFont(createFont("Calisto MT Bold", 120));
 
   //Creates tiles
@@ -72,9 +73,7 @@ void keyPressed() {
       setup();
       return;
     }
-    for (int row = 0; row < guessNum; row++) {
-      for (Tile t : tiles[row]) t.STATE = State.GUESSED;
-    }
+    
     for (Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
   } else if (key == '\b') {
     if (charNum == 0) return;
@@ -109,6 +108,8 @@ boolean checkGuess() {
     guess += tiles[guessNum][i].ch;
   }
   guess = guess.toLowerCase();
+  
+  //checks if guess was valid
   boolean valid = false;
   for (String s : inputWords) {
     if (s.equals(guess)) {
@@ -127,18 +128,30 @@ boolean checkGuess() {
     guessNum--;
     return false;
   }
+  
+  //now checks each character with answer
   for (int i = 0; i < tiles[0].length; i++) {
     tiles[guessNum][i].STATE = State.GUESSED;
   }
+  /*
   for (int i = 0; i < guess.length(); i++) {
     for (int j = 0; j < ans.length(); j++) {
-      if (guess.charAt(i) == guess.charAt(j)) {
+      if (guess.charAt(i) == ans.charAt(j)) {
         tiles[guessNum][i].STATE = State.CORRECT_LETTER;
       }
     }
     if (guess.charAt(i) == ans.charAt(i)) {
       tiles[guessNum][i].STATE = State.CORRECT_PLACE;
     }
+  }*/
+  for(int i = 0; i < ans.length(); i++){
+    for(int j = 0; j < guess.length(); j++){
+      if(ans.charAt(i) == guess.charAt(j)){
+        tiles[guessNum][j].STATE = State.CORRECT_LETTER;
+        
+      }
+    }
   }
+  for(Tile t : tiles[guessNum]) t.display();
   return guess.equals(ans);
 }
