@@ -27,9 +27,9 @@ void setup() {
   charNum = 0;
   won = false;
   ans = answerWords[int(random(answerWords.length))];
-  println("ANSWER: " + ans);
   textFont(createFont("Calisto MT Bold", 120));
-
+  println("Press space to print answer");
+  
   //Creates tiles
   tiles = new Tile[6][5];
   int ystart = 100; //starting y-coordinate of the first row
@@ -81,6 +81,8 @@ void keyPressed() {
     if (charNum == 0) return;
     tiles[guessNum][charNum-1].ch = ' ';
     charNum--;
+  } else if (key == ' '){
+    println("Answer: " + ans);
   } else {
     //make sure the inputted key is from A-Z, then input that into the tile
     if ((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5) {
@@ -101,7 +103,7 @@ void printTitle() {
   textFont(createFont("Calisto MT Bold", 120));
   textAlign(CENTER);
   fill(0);
-  text("Wurdel", width / 2, 100);
+  text("wurdel", width / 2, 100);
 }
 
 boolean checkGuess() {
@@ -111,7 +113,7 @@ boolean checkGuess() {
   }
   guess = guess.toLowerCase();
   
-  //checks if guess was valid
+  //checks if guess was valid, based on input-words.txt
   boolean valid = false;
   for (String s : inputWords) {
     if (s.equals(guess)) {
@@ -135,28 +137,27 @@ boolean checkGuess() {
   for (int i = 0; i < tiles[0].length; i++) {
     tiles[guessNum][i].STATE = State.GUESSED;
   }
-  /*
-  for (int i = 0; i < guess.length(); i++) {
-    for (int j = 0; j < ans.length(); j++) {
-      if (guess.charAt(i) == ans.charAt(j)) {
-        tiles[guessNum][i].STATE = State.CORRECT_LETTER;
-      }
-    }
-    if (guess.charAt(i) == ans.charAt(i)) {
-      tiles[guessNum][i].STATE = State.CORRECT_PLACE;
-    }
-  }*/
+  //Marks characters in the correct location, and keeps a counter for keeping track of characters.
+  int[] count = new int[26];
   for(int i = 0; i < ans.length(); i++){
-    if(ans.charAt(i) == guess.charAt(i)) tiles[guessNum][i].STATE = State.CORRECT_PLACE;
+    count[((int)ans.charAt(i))-97]++;
+    if(ans.charAt(i) == guess.charAt(i)){
+      tiles[guessNum][i].STATE = State.CORRECT_PLACE;
+      count[((int)ans.charAt(i))-97]--;
+    }
   }
+  //Now uses the counter to mark tiles that are in the wrong place
   for(int i = 0; i < ans.length(); i++){
     for(int j = 0; j < guess.length(); j++){
-      if(ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE){
+      //tiles[guessNum][j].STATE != State.CORRECT_PLACE
+      if(ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE && count[((int)ans.charAt(i))-97] > 0){
         tiles[guessNum][j].STATE = State.CORRECT_LETTER;
-        
+        count[((int)ans.charAt(i))-97]--;
       }
     }
   }
+  //displays the tiles
   for(Tile t : tiles[guessNum]) t.display();
+  
   return guess.equals(ans);
 }

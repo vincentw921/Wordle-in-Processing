@@ -10,7 +10,6 @@ class Tile {
   color c;
   int x,y;
   char ch;
-  
   State STATE;
   
   Tile(int x, int y) {
@@ -22,8 +21,7 @@ class Tile {
   }
   
   void display() {
-    //first displays the boxes (TO ADD: THE CHECK GUESS FUNCTION)
-    
+    //displays boxes
     strokeWeight(3);
     if(STATE == State.NOT_GUESSED){
       stroke(100);
