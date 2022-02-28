@@ -104,7 +104,7 @@ void printTitle() {
 }
 
 boolean checkGuess() {
-  String guess = ""; //obv psuedo, finding guess requieres getting the 5 characters from the 5 tiles of the row
+  String guess = ""; 
   for (int i = 0; i < tiles[guessNum].length; i++) {
     guess += tiles[guessNum][i].ch;
   }
@@ -119,7 +119,7 @@ boolean checkGuess() {
   if (!valid) {
     println("Not Valid: " + guess);
     for (Tile t : tiles[guessNum]) {
-      t.c = ' ';
+      t.ch = ' ';
       t.c = color(100);
       t.STATE = State.GUESSING;
       t.display();

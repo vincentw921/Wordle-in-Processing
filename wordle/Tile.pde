@@ -30,14 +30,15 @@ class Tile {
       c = color(200);
     } else if(STATE == State.GUESSED){
       strokeWeight(4);
-      stroke(255);
+      stroke(0);
       c = color(100);
     } else if (STATE == State.CORRECT_LETTER) {
       c = color(255,255,0);
     } else if (STATE == State.CORRECT_PLACE) {
       c = color(0,255,0);
     } else {
-      stroke(0);
+      c = bgcolor;
+      stroke(255);
       strokeWeight(4);
     }
     fill(c);
