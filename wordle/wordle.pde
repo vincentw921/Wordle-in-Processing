@@ -59,7 +59,11 @@ void keyPressed(){
   if(key == '\n'){
     if(charNum < 5) return;
     
-    println("guess entered. but the functionality isnt there yet");
+    if (checkGuess()) {
+      println("Nice, you did it");
+      setup();
+      return;
+    }
     guessNum++;
     charNum = 0;
     
