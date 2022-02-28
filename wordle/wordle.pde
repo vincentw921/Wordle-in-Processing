@@ -45,7 +45,7 @@ void setup() {
   }
   
   //sets status of the first row
-  for(Tile t : tiles[0]) t.STATE = 1;
+  for(Tile t : tiles[0]) t.STATE = State.GUESSING;
   
   //displays tiles
   for(Tile[] tRow : tiles){
@@ -69,9 +69,9 @@ void keyPressed(){
       return;
     }
     for(int row = 0; row < guessNum; row++){
-      for(Tile t : tiles[row]) t.STATE = 2;
+      for(Tile t : tiles[row]) t.STATE = State.GUESSED;
     }
-    for(Tile t : tiles[guessNum]) t.STATE = 1;
+    for(Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
     
   } else if(key == '\b'){
     if(charNum == 0) return;
