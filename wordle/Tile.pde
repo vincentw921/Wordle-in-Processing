@@ -12,7 +12,6 @@ class Tile {
   char ch;
   
   State STATE;
-  //STATE: 0 = not yet used, 1= currently being used, 2= already used
   
   Tile(int x, int y) {
     this.x = x;
@@ -32,7 +31,7 @@ class Tile {
     } else if(STATE == State.GUESSED){
       strokeWeight(4);
       stroke(255);
-      c = color(150);
+      c = color(100);
     } else if (STATE == State.CORRECT_LETTER) {
       c = color(255,255,0);
     } else if (STATE == State.CORRECT_PLACE) {
@@ -48,11 +47,7 @@ class Tile {
     textFont(createFont("Calisto MT", tileHeight - 10));
     textAlign(LEFT);
     if(STATE != State.NOT_GUESSED){
-      if(STATE == State.GUESSING){
-        fill(0);
-      } else if(STATE == State.GUESSED) {
-        fill(0);
-      }
+      fill(0);
       text(ch, x + tileWidth / 4, y + tileHeight - 15);
     }
   }
