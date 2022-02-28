@@ -2,9 +2,7 @@
  *  ITS JUST WORDLE
  * BUT IN PROCESSING
  * WOW SO COOL
- * TO DO: Add a counter thing next to title to show the amount of guesses posssibly (not necessary
- *        Make the guess checking function, and fill in the boxes accordingly
- *        Implement the "word" part of wordle into the checking guess thing
+ * TO DO:
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
@@ -29,7 +27,7 @@ void setup() {
   ans = answerWords[int(random(answerWords.length))];
   textFont(createFont("Calisto MT Bold", 120));
   println("Press space to print answer");
-  
+
   //Creates tiles
   tiles = new Tile[6][5];
   int ystart = 100; //starting y-coordinate of the first row
@@ -57,7 +55,7 @@ void setup() {
 }
 
 void keyPressed() {
-  if(won) return;
+  if (won) return;
   if (key == '\n') {
     if (charNum < 5) return;
 
@@ -75,13 +73,13 @@ void keyPressed() {
       setup();
       return;
     }
-    
+
     for (Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
   } else if (key == '\b') {
     if (charNum == 0) return;
     tiles[guessNum][charNum-1].ch = ' ';
     charNum--;
-  } else if (key == ' '){
+  } else if (key == ' ') {
     println("Answer: " + ans);
   } else {
     //make sure the inputted key is from A-Z, then input that into the tile
@@ -107,12 +105,12 @@ void printTitle() {
 }
 
 boolean checkGuess() {
-  String guess = ""; 
+  String guess = "";
   for (int i = 0; i < tiles[guessNum].length; i++) {
     guess += tiles[guessNum][i].ch;
   }
   guess = guess.toLowerCase();
-  
+
   //checks if guess was valid, based on input-words.txt
   boolean valid = false;
   for (String s : inputWords) {
@@ -132,32 +130,32 @@ boolean checkGuess() {
     guessNum--;
     return false;
   }
-  
+
   //now checks each character with answer
   for (int i = 0; i < tiles[0].length; i++) {
     tiles[guessNum][i].STATE = State.GUESSED;
   }
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
-  for(int i = 0; i < ans.length(); i++){
+  for (int i = 0; i < ans.length(); i++) {
     count[((int)ans.charAt(i))-97]++;
-    if(ans.charAt(i) == guess.charAt(i)){
+    if (ans.charAt(i) == guess.charAt(i)) {
       tiles[guessNum][i].STATE = State.CORRECT_PLACE;
       count[((int)ans.charAt(i))-97]--;
     }
   }
   //Now uses the counter to mark tiles that are in the wrong place
-  for(int i = 0; i < ans.length(); i++){
-    for(int j = 0; j < guess.length(); j++){
+  for (int i = 0; i < ans.length(); i++) {
+    for (int j = 0; j < guess.length(); j++) {
       //tiles[guessNum][j].STATE != State.CORRECT_PLACE
-      if(ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE && count[((int)ans.charAt(i))-97] > 0){
+      if (ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE && count[((int)ans.charAt(i))-97] > 0) {
         tiles[guessNum][j].STATE = State.CORRECT_LETTER;
         count[((int)ans.charAt(i))-97]--;
       }
     }
   }
   //displays the tiles
-  for(Tile t : tiles[guessNum]) t.display();
-  
+  for (Tile t : tiles[guessNum]) t.display();
+
   return guess.equals(ans);
 }
