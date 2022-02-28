@@ -13,16 +13,18 @@ boolean won;
 String ans;
 Tile[][] tiles;
 color bgcolor = color(200);
+String[] inputWords, answerWords;
 
 void setup() {
   background(bgcolor);
   size(600,600);
   frameRate(30);
-  String[] words = loadStrings("words.txt");
+  inputWords = loadStrings("input-words.txt");
+  answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
   won = false;
-  ans = words[int(random(words.length))];
+  ans = answerWords[int(random(answerWords.length))];
   textFont(createFont("Calisto MT Bold", 120));
   
   //Creates tiles
@@ -98,6 +100,23 @@ void printTitle(){
 
 boolean checkGuess() {
   String guess = ""; //obv psuedo, finding guess requieres getting the 5 characters from the 5 tiles of the row
+  for(int i = 0; i < tiles[guessNum].length; i++){
+    guess += tiles[guessNum][i].ch;
+  }
+  boolean valid = false;
+  for(String s : inputWords){
+    if(s.equals(guess)){
+      valid = true;
+      break;
+    }
+  }
+  if(!valid) {
+    for(Tile t : tiles[guessNum]){
+      println("not valid");
+      t.ch = ' ';
+    }
+    return false;
+  }
   for (int i = 0; i < guess.length(); i++) {
     for (int j = 0; j < ans.length(); j++) {
       if (guess.charAt(i) == guess.charAt(j)) {
