@@ -50,6 +50,7 @@ void setup() {
   
   printTitle();
 }
+
 void keyPressed(){
   if(key == '\n'){
     if(charNum < 5) return;
