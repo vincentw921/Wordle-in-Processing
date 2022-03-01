@@ -9,10 +9,10 @@ public enum State {
 
 class Tile {
   color c;
-  int x,y;
+  int x, y;
   char ch;
   State STATE;
-  
+
   Tile(int x, int y) {
     this.x = x;
     this.y = y;
@@ -20,41 +20,41 @@ class Tile {
     STATE = State.NOT_GUESSED;
     ch = ' ';
   }
-  
+
   void display() {
     //displays boxes
     strokeWeight(3);
-    if(STATE == State.NOT_GUESSED){
+    if (STATE == State.NOT_GUESSED) {
       stroke(100);
       c = color(200);
-    } else if(STATE == State.GUESSED){
+    } else if (STATE == State.GUESSED) {
       strokeWeight(4);
       stroke(0);
       c = color(100);
-    } else if(STATE == State.GUESSING){
+    } else if (STATE == State.GUESSING) {
       strokeWeight(4);
       stroke(255);
       c = bgcolor;
-    } else if(STATE == State.SELECTED){
+    } else if (STATE == State.SELECTED) {
       strokeWeight(4);
       stroke(color(255, 255, 0));
       c = bgcolor;
     } else if (STATE == State.CORRECT_LETTER) {
       strokeWeight(4);
       stroke(0);
-      c = color(255,255,0);
+      c = color(255, 255, 0);
     } else if (STATE == State.CORRECT_PLACE) {
       strokeWeight(4);
       stroke(0);
-      c = color(0,255,0);
-    } 
+      c = color(0, 255, 0);
+    }
     fill(c);
-    rect(x,y,tileWidth, tileHeight);
-    
+    rect(x, y, tileWidth, tileHeight);
+
     //Then displays the characters
     textFont(createFont("Calisto MT", tileHeight - 10));
     textAlign(LEFT);
-    if(STATE != State.NOT_GUESSED){
+    if (STATE != State.NOT_GUESSED) {
       fill(0);
       text(ch, x + tileWidth / 4, y + tileHeight - 15);
     }

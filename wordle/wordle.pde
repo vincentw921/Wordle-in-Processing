@@ -7,13 +7,12 @@
  ******************************************************************************************************/
 
 int tileWidth, tileHeight, guessNum, charNum;
-boolean won, lost;
+boolean endGame;
 String ans;
 Tile[][] tiles;
 color bgcolor = color(200);
 String[] inputWords, answerWords;
 String[] correctGuesses;
-
 
 void setup() {
   background(bgcolor);
@@ -23,11 +22,10 @@ void setup() {
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
-  won = false;
-  lost = false;
+  endGame = false;
   ans = answerWords[int(random(answerWords.length))];
   textFont(createFont("Calisto MT Bold", 120));
-  println("Press space to print answer");
+  println("Press space to print the answer");
 
   //Creates tiles
   tiles = new Tile[6][5];
@@ -49,43 +47,40 @@ void setup() {
   tiles[guessNum][charNum].STATE = State.SELECTED;
 
   //displays tiles
-  for (Tile[] tRow : tiles) {
-    for (Tile t : tRow) t.display();
-  }
+  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
 
   printTitle();
 }
 
 void keyPressed() {
-  if (won || lost) return;
+  if (endGame) return;
   if (key == '\n') {
     if (charNum < 5) return;
 
-    if (checkGuess()) {;
-      println("Nice, you did it");
-      won = true;
-      //setup();
+    if (checkGuess()) {
+      String attempt = " attempt";
+      if(guessNum > 0) attempt += "s";
+      println("Nice, you did it in " + (guessNum + 1) + attempt);
+      endGame = true;
       return;
     }
     guessNum++;
     charNum = 0;
-    
+
     if (guessNum == 6) {
-      println("6/6 guess used. The answer was: " + ans );
-      lost = true;
-      //setup();
+      println("6/6 guesses used. The answer was: " + ans );
+      endGame = true;
       return;
     }
-    
+
     for (Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
     tiles[guessNum][charNum].STATE = State.SELECTED;
   } else if (key == '\b') {
     if (charNum == 0) return;
-    if(charNum < 5) tiles[guessNum][charNum].STATE = State.GUESSING;
+    if (charNum < 5) tiles[guessNum][charNum].STATE = State.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].STATE = State.SELECTED;
     charNum--;
-    
   } else if (key == ' ') {
     println("Answer: " + ans);
   } else {
@@ -95,15 +90,13 @@ void keyPressed() {
       tiles[guessNum][charNum].STATE = State.GUESSING;
       charNum++;
       tiles[guessNum][min(4, charNum)].STATE = State.SELECTED;
-    } 
+    }
   }
 }
 void draw() {
   background(bgcolor);
   printTitle();
-  for (Tile[] tRow : tiles) {
-    for (Tile t : tRow) t.display();
-  }
+  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
 }
 
 void printTitle() {
@@ -115,9 +108,7 @@ void printTitle() {
 
 boolean checkGuess() {
   String guess = "";
-  for (int i = 0; i < tiles[guessNum].length; i++) {
-    guess += tiles[guessNum][i].ch;
-  }
+  for (int i = 0; i < tiles[guessNum].length; i++) guess += tiles[guessNum][i].ch;
   guess = guess.toLowerCase();
 
   //checks if guess was valid, based on input-words.txt
@@ -129,7 +120,7 @@ boolean checkGuess() {
     }
   }
   if (!valid) {
-    println("Not Valid: " + guess);
+    println("Not a valid input: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
       t.c = color(100);
@@ -141,9 +132,8 @@ boolean checkGuess() {
   }
 
   //now checks each character with answer
-  for (int i = 0; i < tiles[0].length; i++) {
-    tiles[guessNum][i].STATE = State.GUESSED;
-  }
+  for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].STATE = State.GUESSED;
+  
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
   for (int i = 0; i < ans.length(); i++) {
@@ -153,6 +143,7 @@ boolean checkGuess() {
       count[((int)ans.charAt(i))-97]--;
     }
   }
+  
   //Now uses the counter to mark tiles that are in the wrong place
   for (int i = 0; i < ans.length(); i++) {
     for (int j = 0; j < guess.length(); j++) {
@@ -163,8 +154,8 @@ boolean checkGuess() {
       }
     }
   }
+  
   //displays the tiles
   for (Tile t : tiles[guessNum]) t.display();
-
   return guess.equals(ans);
 }
