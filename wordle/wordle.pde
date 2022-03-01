@@ -7,7 +7,7 @@
  ******************************************************************************************************/
 
 int tileWidth, tileHeight, guessNum, charNum;
-boolean won;
+boolean won, lost;
 String ans;
 Tile[][] tiles;
 color bgcolor = color(200);
@@ -24,6 +24,7 @@ void setup() {
   guessNum = 0;
   charNum = 0;
   won = false;
+  lost = false;
   ans = answerWords[int(random(answerWords.length))];
   textFont(createFont("Calisto MT Bold", 120));
   println("Press space to print answer");
@@ -45,6 +46,7 @@ void setup() {
 
   //sets status of the first row
   for (Tile t : tiles[0]) t.STATE = State.GUESSING;
+  tiles[guessNum][charNum].STATE = State.SELECTED;
 
   //displays tiles
   for (Tile[] tRow : tiles) {
@@ -55,11 +57,11 @@ void setup() {
 }
 
 void keyPressed() {
-  if (won) return;
+  if (won || lost) return;
   if (key == '\n') {
     if (charNum < 5) return;
 
-    if (checkGuess()) {
+    if (checkGuess()) {;
       println("Nice, you did it");
       won = true;
       //setup();
@@ -67,26 +69,33 @@ void keyPressed() {
     }
     guessNum++;
     charNum = 0;
-
+    
     if (guessNum == 6) {
-      println("6/6, u messed up, resetting.");
-      setup();
+      println("6/6 guess used. The answer was: " + ans );
+      lost = true;
+      //setup();
       return;
     }
-
+    
     for (Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
+    tiles[guessNum][charNum].STATE = State.SELECTED;
   } else if (key == '\b') {
     if (charNum == 0) return;
+    if(charNum < 5) tiles[guessNum][charNum].STATE = State.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
+    tiles[guessNum][charNum-1].STATE = State.SELECTED;
     charNum--;
+    
   } else if (key == ' ') {
     println("Answer: " + ans);
   } else {
     //make sure the inputted key is from A-Z, then input that into the tile
     if ((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(key);
+      tiles[guessNum][charNum].STATE = State.GUESSING;
       charNum++;
-    }
+      tiles[guessNum][min(4, charNum)].STATE = State.SELECTED;
+    } 
   }
 }
 void draw() {

@@ -1,6 +1,7 @@
 public enum State {
   NOT_GUESSED,
   GUESSING,
+  SELECTED,
   GUESSED,
   CORRECT_LETTER,
   CORRECT_PLACE;
@@ -30,6 +31,14 @@ class Tile {
       strokeWeight(4);
       stroke(0);
       c = color(100);
+    } else if(STATE == State.GUESSING){
+      strokeWeight(4);
+      stroke(255);
+      c = bgcolor;
+    } else if(STATE == State.SELECTED){
+      strokeWeight(4);
+      stroke(color(255, 255, 0));
+      c = bgcolor;
     } else if (STATE == State.CORRECT_LETTER) {
       strokeWeight(4);
       stroke(0);
@@ -38,10 +47,7 @@ class Tile {
       strokeWeight(4);
       stroke(0);
       c = color(0,255,0);
-    } else {
-      stroke(255);
-      strokeWeight(4);
-    }
+    } 
     fill(c);
     rect(x,y,tileWidth, tileHeight);
     
