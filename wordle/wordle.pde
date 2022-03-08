@@ -3,16 +3,25 @@
  * BUT IN PROCESSING
  * WOW SO COOL
  * TO DO:
+ *        Add Victory/Loss screen
+ *        Add Keyboard
+ *        (maybe?) Add animation to revealing letters
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
 int tileWidth, tileHeight, guessNum, charNum;
-boolean endGame;
 String ans;
 Tile[][] tiles;
 color bgcolor = color(200);
 String[] inputWords, answerWords;
 String[] correctGuesses;
+GameState gState;
+
+public enum GameState {
+  ONGOING,
+    DEFEAT,
+    VICTORY;
+}
 
 void setup() {
   background(bgcolor);
@@ -22,16 +31,15 @@ void setup() {
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
-  endGame = false;
+  gState = GameState.ONGOING;
   ans = answerWords[int(random(answerWords.length))];
-  textFont(createFont("Calisto MT Bold", 120));
-  println("Press space to print the answer");
 
   //Creates tiles
   tiles = new Tile[6][5];
-  int ystart = 100; //starting y-coordinate of the first row
+  int ystart = 120; //starting y-coordinate of the first row
+  int tileAreaHeight = height * 2 / 5;
   tileWidth = (width - 50) / tiles[0].length - 5;
-  tileHeight = (height - 65 - ystart) / tiles.length - 5;
+  tileHeight = tileAreaHeight / tiles.length - 5;
   int y = ystart-50;
   for (Tile[] tRow : tiles) {
     y += tileHeight + 10;
@@ -43,43 +51,43 @@ void setup() {
   }
 
   //sets status of the first row
-  for (Tile t : tiles[0]) t.STATE = State.GUESSING;
-  tiles[guessNum][charNum].STATE = State.SELECTED;
+  for (Tile t : tiles[0]) t.STATE = TileState.GUESSING;
+  tiles[guessNum][charNum].STATE = TileState.SELECTED;
 
   //displays tiles
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
 
+  println("Press space to print the answer");
   printTitle();
 }
 
 void keyPressed() {
-  if (endGame) return;
+  //if the game isn't running, dont check for keyboard inputs
+  if (gState != GameState.ONGOING) return;
+
+  //if enter key is pressed, make sure the input is valid before checking it.
   if (key == '\n') {
     if (charNum < 5) return;
 
     if (checkGuess()) {
-      String attempt = " valid attempt";
-      if (guessNum > 0) attempt += "s";
-      println("Nice, you did it in " + (guessNum + 1) + attempt);
-      endGame = true;
+      gState = GameState.VICTORY;
       return;
     }
     guessNum++;
     charNum = 0;
 
     if (guessNum == 6) {
-      println("6/6 valid guesses used. The answer was: " + ans );
-      endGame = true;
+      gState = GameState.DEFEAT;
       return;
     }
 
-    for (Tile t : tiles[guessNum]) t.STATE = State.GUESSING;
-    tiles[guessNum][charNum].STATE = State.SELECTED;
+    for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
+    tiles[guessNum][charNum].STATE = TileState.SELECTED;
   } else if (key == '\b') {
     if (charNum == 0) return;
-    if (charNum < 5) tiles[guessNum][charNum].STATE = State.GUESSING;
+    if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
-    tiles[guessNum][charNum-1].STATE = State.SELECTED;
+    tiles[guessNum][charNum-1].STATE = TileState.SELECTED;
     charNum--;
   } else if (key == ' ') {
     println("Answer: " + ans);
@@ -87,18 +95,22 @@ void keyPressed() {
     //make sure the inputted key is from A-Z, then input that into the tile
     if ((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(key);
-      tiles[guessNum][charNum].STATE = State.GUESSING;
+      tiles[guessNum][charNum].STATE = TileState.GUESSING;
       charNum++;
-      tiles[guessNum][min(4, charNum)].STATE = State.SELECTED;
+      tiles[guessNum][min(4, charNum)].STATE = TileState.SELECTED;
     }
   }
 }
+
 void draw() {
   background(bgcolor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
+  if (gState == GameState.VICTORY) displayVictory();
+  if (gState == GameState.DEFEAT) displayDefeat();
 }
 
+//Prints the title;
 void printTitle() {
   textFont(createFont("Calisto MT Bold", 120));
   textAlign(CENTER);
@@ -106,6 +118,32 @@ void printTitle() {
   text("wurdel", width / 2, 100);
 }
 
+//Displays victory screen
+void displayVictory() {
+  fill(255, 255, 255, 150);
+  noStroke();
+  rect(0, 0, width, height);
+  textFont(createFont("Calisto MT Bold", 30));
+  String attempt = " valid attempt";
+  if (guessNum > 0) attempt += "s";
+  fill(0);
+  textAlign(CENTER);
+  text("Nice, you did it in " + (guessNum + 1) + attempt, width / 2, height / 2);
+}
+
+//Displays defeat screen
+void displayDefeat() {
+  fill(80, 50, 50, 150);
+  stroke(255, 50 ,50 , 200);
+  strokeWeight(30);
+  rect(0, 0, width, height);
+  fill(0);
+  textFont(createFont("Calisto MT Bold", 30));
+  textAlign(CENTER);
+  text("6/6 valid guesses used. The answer was: " + ans, width / 2, height / 2);
+}
+
+//Checks the inputted guess
 boolean checkGuess() {
   String guess = "";
   for (int i = 0; i < tiles[guessNum].length; i++) guess += tiles[guessNum][i].ch;
@@ -124,7 +162,7 @@ boolean checkGuess() {
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
       t.c = color(100);
-      t.STATE = State.GUESSING;
+      t.STATE = TileState.GUESSING;
       t.display();
     }
     guessNum--;
@@ -132,14 +170,14 @@ boolean checkGuess() {
   }
 
   //now checks each character with answer
-  for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].STATE = State.GUESSED;
+  for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].STATE = TileState.GUESSED;
 
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
   for (int i = 0; i < ans.length(); i++) {
     count[((int)ans.charAt(i))-97]++;
     if (ans.charAt(i) == guess.charAt(i)) {
-      tiles[guessNum][i].STATE = State.CORRECT_PLACE;
+      tiles[guessNum][i].STATE = TileState.CORRECT_PLACE;
       count[((int)ans.charAt(i))-97]--;
     }
   }
@@ -148,8 +186,8 @@ boolean checkGuess() {
   for (int i = 0; i < ans.length(); i++) {
     for (int j = 0; j < guess.length(); j++) {
       //tiles[guessNum][j].STATE != State.CORRECT_PLACE
-      if (ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != State.CORRECT_PLACE && count[((int)ans.charAt(i))-97] > 0) {
-        tiles[guessNum][j].STATE = State.CORRECT_LETTER;
+      if (ans.charAt(i) == guess.charAt(j) && tiles[guessNum][j].STATE != TileState.CORRECT_PLACE && count[((int)ans.charAt(i))-97] > 0) {
+        tiles[guessNum][j].STATE = TileState.CORRECT_LETTER;
         count[((int)ans.charAt(i))-97]--;
       }
     }

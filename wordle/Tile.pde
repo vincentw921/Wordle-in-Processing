@@ -1,4 +1,4 @@
-public enum State {
+public enum TileState {
   NOT_GUESSED,
   GUESSING,
   SELECTED,
@@ -11,39 +11,39 @@ class Tile {
   color c;
   int x, y;
   char ch;
-  State STATE;
+  TileState STATE;
 
   Tile(int x, int y) {
     this.x = x;
     this.y = y;
     c = color(100);
-    STATE = State.NOT_GUESSED;
+    STATE = TileState.NOT_GUESSED;
     ch = ' ';
   }
 
   void display() {
     //displays boxes
     strokeWeight(3);
-    if (STATE == State.NOT_GUESSED) {
+    if (STATE == TileState.NOT_GUESSED) {
       stroke(100);
       c = color(200);
-    } else if (STATE == State.GUESSED) {
+    } else if (STATE == TileState.GUESSED) {
       strokeWeight(4);
       stroke(0);
       c = color(100);
-    } else if (STATE == State.GUESSING) {
+    } else if (STATE == TileState.GUESSING) {
       strokeWeight(4);
       stroke(255);
       c = bgcolor;
-    } else if (STATE == State.SELECTED) {
+    } else if (STATE == TileState.SELECTED) {
       strokeWeight(4);
       stroke(color(255, 255, 0));
       c = bgcolor;
-    } else if (STATE == State.CORRECT_LETTER) {
+    } else if (STATE == TileState.CORRECT_LETTER) {
       strokeWeight(4);
       stroke(0);
       c = color(255, 255, 0);
-    } else if (STATE == State.CORRECT_PLACE) {
+    } else if (STATE == TileState.CORRECT_PLACE) {
       strokeWeight(4);
       stroke(0);
       c = color(0, 255, 0);
@@ -52,11 +52,11 @@ class Tile {
     rect(x, y, tileWidth, tileHeight);
 
     //Then displays the characters
-    textFont(createFont("Calisto MT", tileHeight - 10));
-    textAlign(LEFT);
-    if (STATE != State.NOT_GUESSED) {
+    textFont(createFont("Calisto MT", tileHeight * 0.8));
+    textAlign(CENTER);
+    if (STATE != TileState.NOT_GUESSED) {
       fill(0);
-      text(ch, x + tileWidth / 4, y + tileHeight - 15);
+      text(ch, x + tileWidth * 0.5, y + tileHeight * 0.8);
     }
   }
 }
