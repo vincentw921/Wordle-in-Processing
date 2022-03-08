@@ -58,8 +58,8 @@ void keyPressed() {
     if (charNum < 5) return;
 
     if (checkGuess()) {
-      String attempt = " attempt";
-      if(guessNum > 0) attempt += "s";
+      String attempt = " valid attempt";
+      if (guessNum > 0) attempt += "s";
       println("Nice, you did it in " + (guessNum + 1) + attempt);
       endGame = true;
       return;
@@ -68,7 +68,7 @@ void keyPressed() {
     charNum = 0;
 
     if (guessNum == 6) {
-      println("6/6 guesses used. The answer was: " + ans );
+      println("6/6 valid guesses used. The answer was: " + ans );
       endGame = true;
       return;
     }
@@ -133,7 +133,7 @@ boolean checkGuess() {
 
   //now checks each character with answer
   for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].STATE = State.GUESSED;
-  
+
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
   for (int i = 0; i < ans.length(); i++) {
@@ -143,7 +143,7 @@ boolean checkGuess() {
       count[((int)ans.charAt(i))-97]--;
     }
   }
-  
+
   //Now uses the counter to mark tiles that are in the wrong place
   for (int i = 0; i < ans.length(); i++) {
     for (int j = 0; j < guess.length(); j++) {
@@ -154,7 +154,7 @@ boolean checkGuess() {
       }
     }
   }
-  
+
   //displays the tiles
   for (Tile t : tiles[guessNum]) t.display();
   return guess.equals(ans);
