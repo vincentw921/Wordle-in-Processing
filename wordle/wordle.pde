@@ -25,7 +25,7 @@ GameState gState;
 
 void setup() {
   background(bgcolor);
-  size(600, 600);
+  size(600, 1100);
   frameRate(30);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
@@ -36,16 +36,17 @@ void setup() {
   ans = answerWords[int(random(answerWords.length))];
   //Creates tiles
   tiles = new Tile[6][5];
+ //starting y-coordinate of the first row
 
-  int ystart = 80; //starting y-coordinate of the first row
-
-  int tileAreaHeight = height * 2 / 5;
-  tileWidth = (width - 50) / tiles[0].length - 5;
-  tileHeight = tileAreaHeight / tiles.length - 5;
-  int y = ystart-50;
+  
+  tileWidth = (width - 135) / tiles[0].length - 5;
+  //int tileAreaHeight = height * 2 / 5;
+  //tileHeight = tileAreaHeight / tiles.length - 5;
+  tileHeight = tileWidth;
+  int y = -10;
   for (Tile[] tRow : tiles) {
     y += tileHeight + 10;
-    int x = 20;
+    int x = 65;
     for (int j = 0; j < tRow.length; j++) {
       tRow[j] = new Tile(x, y);
       x += tileWidth + 10;
@@ -80,11 +81,10 @@ void keyPressed() {
       gState = GameState.DEFEAT;
       return;
     }
-    
+
     //the guess has already been calculated, now to update the new row's tiles
     for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
     tiles[guessNum][charNum].STATE = TileState.SELECTED;
-    
   } else if (key == '\b') {  //removes the current character and backs up a tile
     if (charNum == 0) return;
     if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
@@ -114,10 +114,10 @@ void draw() {
 
 //Prints the title;
 void printTitle() {
-  textFont(createFont("Calisto MT Bold", 80));
+  textFont(createFont("karnakcondensed-normal-700.ttf", 80));
   textAlign(CENTER);
   fill(0);
-  text("wurdel", width / 2, 60);
+  text("Wordle", width / 2, 75);
 }
 
 //Displays victory screen
@@ -131,13 +131,12 @@ void displayVictory() {
   //using the ? as intended, to make code harder to read
 
   text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 2);
-
 }
 
 //Displays defeat screen
 void displayDefeat() {
   fill(80, 50, 50, 150);
-  stroke(255, 50 ,50 , 200);
+  stroke(255, 50, 50, 200);
   int border = 50;
   strokeWeight(border);
   rect(-border / 4, -border / 4, width + border / 2, height + border / 2, border);
@@ -145,7 +144,6 @@ void displayDefeat() {
   textFont(createFont("Calisto MT Bold", 30));
   textAlign(CENTER);
   text("6/6 valid guesses used.\nThe answer was: " + ans, width / 2, height / 2);
-
 }
 
 //Checks the inputted guess
