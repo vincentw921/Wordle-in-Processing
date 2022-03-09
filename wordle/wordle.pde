@@ -36,12 +36,9 @@ void setup() {
   ans = answerWords[int(random(answerWords.length))];
   //Creates tiles
   tiles = new Tile[6][5];
- //starting y-coordinate of the first row
-
   
+  //TO DO: Figure out why the tile's positions is offset by a certain percentage
   tileWidth = (width - 135) / tiles[0].length - 5;
-  //int tileAreaHeight = height * 2 / 5;
-  //tileHeight = tileAreaHeight / tiles.length - 5;
   tileHeight = tileWidth;
   int y = -10;
   for (Tile[] tRow : tiles) {
