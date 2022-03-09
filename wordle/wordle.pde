@@ -3,25 +3,25 @@
  * BUT IN PROCESSING
  * WOW SO COOL
  * TO DO:
- *        Add Victory/Loss screen
+ *        Add statistics to victory/death screen?
  *        Add Keyboard
  *        (maybe?) Add animation to revealing letters
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
-int tileWidth, tileHeight, guessNum, charNum;
+public enum GameState {
+  ONGOING,
+  DEFEAT,
+  VICTORY;
+}
+
+int tileWidth, tileHeight, guessNum, charNum, invalidCount;
 String ans;
-Tile[][] tiles;
 color bgcolor = color(200);
 String[] inputWords, answerWords;
 String[] correctGuesses;
+Tile[][] tiles;
 GameState gState;
-
-public enum GameState {
-  ONGOING,
-    DEFEAT,
-    VICTORY;
-}
 
 void setup() {
   background(bgcolor);
@@ -31,12 +31,12 @@ void setup() {
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
+  invalidCount = 0;
   gState = GameState.ONGOING;
   ans = answerWords[int(random(answerWords.length))];
-
   //Creates tiles
   tiles = new Tile[6][5];
-  int ystart = 120; //starting y-coordinate of the first row
+  int ystart = 80; //starting y-coordinate of the first row
   int tileAreaHeight = height * 2 / 5;
   tileWidth = (width - 50) / tiles[0].length - 5;
   tileHeight = tileAreaHeight / tiles.length - 5;
@@ -68,31 +68,31 @@ void keyPressed() {
   //if enter key is pressed, make sure the input is valid before checking it.
   if (key == '\n') {
     if (charNum < 5) return;
-
     if (checkGuess()) {
       gState = GameState.VICTORY;
       return;
     }
     guessNum++;
     charNum = 0;
-
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
       return;
     }
-
+    
+    //the guess has already been calculated, now to update the new row's tiles
     for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
     tiles[guessNum][charNum].STATE = TileState.SELECTED;
-  } else if (key == '\b') {
+    
+  } else if (key == '\b') {  //removes the current character and backs up a tile
     if (charNum == 0) return;
     if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].STATE = TileState.SELECTED;
     charNum--;
-  } else if (key == ' ') {
+  } else if (key == ' ') { //shows the answer
     println("Answer: " + ans);
   } else {
-    //make sure the inputted key is from A-Z, then input that into the tile
+    //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(key);
       tiles[guessNum][charNum].STATE = TileState.GUESSING;
@@ -112,10 +112,10 @@ void draw() {
 
 //Prints the title;
 void printTitle() {
-  textFont(createFont("Calisto MT Bold", 120));
+  textFont(createFont("Calisto MT Bold", 80));
   textAlign(CENTER);
   fill(0);
-  text("wurdel", width / 2, 100);
+  text("wurdel", width / 2, 60);
 }
 
 //Displays victory screen
@@ -129,18 +129,21 @@ void displayVictory() {
   fill(0);
   textAlign(CENTER);
   text("Nice, you did it in " + (guessNum + 1) + attempt, width / 2, height / 2);
+  //using the ? as intended, to make code harder to read
+  text(invalidCount == 1 ? "You made " + invalidCount + " incorrect guess" : "You made " + invalidCount + " incorrect guesses", width / 2, height / 2 + 30);
 }
 
 //Displays defeat screen
 void displayDefeat() {
   fill(80, 50, 50, 150);
   stroke(255, 50 ,50 , 200);
-  strokeWeight(30);
-  rect(0, 0, width, height);
-  fill(0);
+  int border = 100;
+  strokeWeight(border);
+  rect(-border / 4, -border / 4, width + border / 2, height + border / 2, border);
+  fill(255);
   textFont(createFont("Calisto MT Bold", 30));
   textAlign(CENTER);
-  text("6/6 valid guesses used. The answer was: " + ans, width / 2, height / 2);
+  text("6/6 valid guesses used.\nThe answer was: " + ans, width / 2, height / 2);
 }
 
 //Checks the inputted guess
@@ -158,6 +161,7 @@ boolean checkGuess() {
     }
   }
   if (!valid) {
+    invalidCount++;
     println("Not a valid input: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
