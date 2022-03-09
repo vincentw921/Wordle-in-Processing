@@ -19,8 +19,8 @@ GameState gState;
 
 public enum GameState {
   ONGOING,
-    DEFEAT,
-    VICTORY;
+  DEFEAT,
+  VICTORY;
 }
 
 void setup() {
@@ -36,7 +36,7 @@ void setup() {
 
   //Creates tiles
   tiles = new Tile[6][5];
-  int ystart = 120; //starting y-coordinate of the first row
+  int ystart = 75; //starting y-coordinate of the first row
   int tileAreaHeight = height * 2 / 5;
   tileWidth = (width - 50) / tiles[0].length - 5;
   tileHeight = tileAreaHeight / tiles.length - 5;
@@ -112,10 +112,10 @@ void draw() {
 
 //Prints the title;
 void printTitle() {
-  textFont(createFont("Calisto MT Bold", 120));
+  textFont(createFont("Calisto MT Bold", 80));
   textAlign(CENTER);
   fill(0);
-  text("wurdel", width / 2, 100);
+  text("wurdel", width / 2, 60);
 }
 
 //Displays victory screen
@@ -124,11 +124,9 @@ void displayVictory() {
   noStroke();
   rect(0, 0, width, height);
   textFont(createFont("Calisto MT Bold", 30));
-  String attempt = " valid attempt";
-  if (guessNum > 0) attempt += "s";
   fill(0);
   textAlign(CENTER);
-  text("Nice, you did it in " + (guessNum + 1) + attempt, width / 2, height / 2);
+  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 2);
 }
 
 //Displays defeat screen
@@ -136,11 +134,13 @@ void displayDefeat() {
   fill(80, 50, 50, 150);
   stroke(255, 50 ,50 , 200);
   strokeWeight(30);
-  rect(0, 0, width, height);
-  fill(0);
+  int border = 50;
+  rect(-border / 4, -border / 4, width+border / 2, height+border / 2, border);
+  fill(255);
   textFont(createFont("Calisto MT Bold", 30));
   textAlign(CENTER);
-  text("6/6 valid guesses used. The answer was: " + ans, width / 2, height / 2);
+  text("6/6 valid guesses used.", width / 2, height / 2);
+  text("The answer was: " + ans, width / 2, height / 2 + 30);
 }
 
 //Checks the inputted guess
