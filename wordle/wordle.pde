@@ -28,11 +28,12 @@ String[] inputWords, answerWords;
 String[] correctGuesses;
 Tile[][] tiles;
 GameState gState;
+PFont text, title;
 
 void setup() {
   background(bgColor);
   size(500, 1000);
-  frameRate(30);
+  frameRate(144);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
@@ -40,11 +41,13 @@ void setup() {
   invalidCount = 0;
   ans = answerWords[int(random(answerWords.length))];
   bgColor = color(19);
+  text = createFont("Arial Bold", 30);
+  title = createFont("karnakcondensed-normal-700.ttf", 60);
   
   //Creates tiles
   tiles = new Tile[6][5];
   int y = 90; //starting ypos
-  int padding = 5; //padding of tiles
+  int padding = 7; //padding of tiles
   tileSideLength = (width - 6 * padding)/tiles[0].length;
   for (Tile[] tRow : tiles) {
     int x = padding;
@@ -122,7 +125,7 @@ void printTitle() {
   stroke(50);
   strokeWeight(2);
   line(30, 70, width-30, 70);
-  textFont(createFont("karnakcondensed-normal-700.ttf", 60));
+  textFont(title);
   textAlign(CENTER);
   fill(255);
   text("Wordle", width / 2, 60);
@@ -132,12 +135,12 @@ void printTitle() {
 void displayVictory() {
   fill(255, 255, 255, 150);
   noStroke();
-  rect(0, 0, width, height);
-  textFont(createFont("Calisto MT Bold", 30));
+  rect(40, height / 3, width - 80, 100, 10);
+  textFont(text);
   fill(0);
   textAlign(CENTER);
   //using the ? as intended, to make code harder to read
-  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 2);
+  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 3 + 60);
 }
 
 //Displays defeat screen
@@ -147,10 +150,10 @@ void displayDefeat() {
   int border = 50;
   strokeWeight(border);
   rect(-border / 4, -border / 4, width + border / 2, height + border / 2, border);
-  fill(255);
-  textFont(createFont("Calisto MT Bold", 30));
+  fill(0);
+  textFont(text);
   textAlign(CENTER);
-  text("6/6 valid guesses used.\nThe answer was: " + ans, width / 2, height / 2);
+  text("Correct answer: " + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "!", width / 2, height / 2) ;
 }
 
 //Checks the inputted guess
