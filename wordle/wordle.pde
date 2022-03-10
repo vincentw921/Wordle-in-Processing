@@ -15,8 +15,8 @@
 
 public enum GameState {
   ONGOING,
-    DEFEAT,
-    VICTORY;
+  DEFEAT,
+  VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
@@ -56,8 +56,10 @@ void setup() {
     }
     y += tileSideLength + padding;
   }
+  
   //initialize keyboard
   initKb();
+  
   //sets status of the first row
   for (Tile t : tiles[0]) t.STATE = TileState.GUESSING;
   tiles[guessNum][charNum].STATE = TileState.SELECTED;
@@ -75,7 +77,11 @@ void draw() {
   background(bgColor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-  displayKb();
+  for(int i = 0; i < keyboard.length; i++){
+    println(i);
+    keyboard[i].display();
+    
+  }
   if (gState == GameState.VICTORY) displayVictory();
   if (gState == GameState.DEFEAT) displayDefeat();
 }
@@ -160,40 +166,34 @@ void displayDefeat() {
 
 void initKb(){
    // first row
-  int w = 10;
-  int h = 10;
+  int w = 45;
+  int h = 45;
   int charStart = 'A';
   int x = 0;
   int y = 90 + (6 * (tileSideLength + padding));
-  for (int i = 0; i < 10; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+  int i = 0;
+  for (; i < 10; i++) {
+    keyboard[i] = new Key(x,y,w,(char)charStart);
     charStart++;
-    x += w;
-    y += h;
+    x += w + 5;
   }
   
   // second row
-  x += 5;
-  for (int i = 0; i < 9; i++) {
+  y += h + 5;
+  for (; i < 19; i++) {
+    keyboard[i] = new Key(x,y,w,(char)charStart);
+    charStart++;
+    x += w + 5;
+  }
+  
+  //third row
+  y += h + 5;
+  for (; i < 28; i++) {
     keyboard[i] = new Key(x,y,w,h,(char)charStart);
     charStart++;
-    x += w;
-    y += h;
-  }
-  x += 5;
-  for (int i = 0; i < 7; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
-    charStart++;
-    x += w;
-    y += h;
+    x += w + 5;
   }
 
-}
-
-void displayKb() {
-  for (Key i : keyboard) {
-    //i.display();
-  }
 }
 
 void kbPressed() {
