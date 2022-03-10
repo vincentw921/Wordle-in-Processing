@@ -16,11 +16,12 @@ color bgcolor = color(200);
 String[] inputWords, answerWords;
 String[] correctGuesses;
 GameState gState;
+Key[] keyboard = new Key[28];
 
 public enum GameState {
   ONGOING,
-  DEFEAT,
-  VICTORY;
+    DEFEAT,
+    VICTORY;
 }
 
 void setup() {
@@ -48,6 +49,35 @@ void setup() {
       tRow[j] = new Tile(x, y);
       x += tileWidth + 10;
     }
+  }
+  
+  // first row
+  int w = 10;
+  int h = 10;
+  int charStart = 'A';
+  int x = 0;
+  y += 20;
+  for (int i = 0; i < 10; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
+  }
+  
+  // second row
+  x += 5;
+  for (int i = 0; i < 9; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
+  }
+  x += 5;
+  for (int i = 0; i < 7; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
   }
 
   //sets status of the first row
@@ -102,6 +132,60 @@ void keyPressed() {
   }
 }
 
+void displayKb() {
+  for (Key i : keyboard) {
+    i.display();
+  }
+}
+
+void kbPressed() {
+  //if the game isn't running, dont check for keyboard inputs
+  if (gState != GameState.ONGOING) return;
+
+  //if enter key is pressed, make sure the input is valid before checking it.
+  char kPressed = ' ';
+  for (Key i : keyboard) {
+    if (i.isPressed()) {
+      kPressed = i.k;
+    }
+  }
+  if (kPressed == '\n') {
+    if (charNum < 5) return;
+
+    if (checkGuess()) {
+      gState = GameState.VICTORY;
+      return;
+    }
+    guessNum++;
+    charNum = 0;
+
+    if (guessNum == 6) {
+      gState = GameState.DEFEAT;
+      return;
+    }
+
+    for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
+    tiles[guessNum][charNum].STATE = TileState.SELECTED;
+  } else if (kPressed == '\b') {
+    if (charNum == 0) return;
+    if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
+    tiles[guessNum][charNum-1].ch = ' ';
+    tiles[guessNum][charNum-1].STATE = TileState.SELECTED;
+    charNum--;
+  } else if (key == ' ') {
+    println("Answer: " + ans);
+  } else {
+    //make sure the inputted key is from A-Z, then input that into the tile
+    char toLower = Character.toLowerCase(kPressed);
+    if ((toLower >= 97 && toLower <= 122) && charNum < 5) {
+      tiles[guessNum][charNum].ch = toLower;
+      tiles[guessNum][charNum].STATE = TileState.GUESSING;
+      charNum++;
+      tiles[guessNum][min(4, charNum)].STATE = TileState.SELECTED;
+    }
+  }
+}
+
 void draw() {
   background(bgcolor);
   printTitle();
@@ -132,7 +216,7 @@ void displayVictory() {
 //Displays defeat screen
 void displayDefeat() {
   fill(80, 50, 50, 150);
-  stroke(255, 50 ,50 , 200);
+  stroke(255, 50, 50, 200);
   strokeWeight(30);
   int border = 50;
   rect(-border / 4, -border / 4, width+border / 2, height+border / 2, border);
