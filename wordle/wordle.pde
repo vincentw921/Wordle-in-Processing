@@ -19,7 +19,7 @@ public enum GameState {
     VICTORY;
 }
 
-int tileSideLength, guessNum, charNum, invalidCount;
+int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans;
 color bgColor;
 String[] inputWords, answerWords;
@@ -46,7 +46,7 @@ void setup() {
   //Creates tiles
   tiles = new Tile[6][5];
   int y = 90; //starting ypos
-  int padding = 7; //padding of tiles
+  padding = 7; //padding of tiles
   tileSideLength = (width - 6 * padding)/tiles[0].length;
   for (Tile[] tRow : tiles) {
     int x = padding;
@@ -56,36 +56,8 @@ void setup() {
     }
     y += tileSideLength + padding;
   }
-  
-  // first row
-  int w = 10;
-  int h = 10;
-  int charStart = 'A';
-  int x = 0;
-  y += 20;
-  for (int i = 0; i < 10; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
-    charStart++;
-    x += w;
-    y += h;
-  }
-  
-  // second row
-  x += 5;
-  for (int i = 0; i < 9; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
-    charStart++;
-    x += w;
-    y += h;
-  }
-  x += 5;
-  for (int i = 0; i < 7; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
-    charStart++;
-    x += w;
-    y += h;
-  }
-
+  //initialize keyboard
+  initKb();
   //sets status of the first row
   for (Tile t : tiles[0]) t.STATE = TileState.GUESSING;
   tiles[guessNum][charNum].STATE = TileState.SELECTED;
@@ -97,6 +69,15 @@ void setup() {
   
   println("Press space to print the answer");
   printTitle();
+}
+
+void draw() {
+  background(bgColor);
+  printTitle();
+  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
+  displayKb();
+  if (gState == GameState.VICTORY) displayVictory();
+  if (gState == GameState.DEFEAT) displayDefeat();
 }
 
 void keyPressed() {
@@ -140,9 +121,78 @@ void keyPressed() {
   }
 }
 
+
+//Prints the title;
+void printTitle() {
+  stroke(50);
+  strokeWeight(2);
+  line(30, 70, width-30, 70);
+  textFont(title);
+  textAlign(CENTER);
+  fill(255);
+  text("Wordle", width / 2, 60);
+}
+
+//Displays victory screen
+void displayVictory() {
+  fill(255, 255, 255, 180);
+  noStroke();
+  rect(40, height / 3, width - 80, 100, 10);
+  textFont(text);
+  fill(0);
+  textAlign(CENTER);
+  //using the ? as intended, to make code harder to read
+  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 3 + 60);
+}
+
+//Displays defeat screen
+void displayDefeat() {
+  fill(80, 50, 50, 150);
+  stroke(255, 50, 50, 200);
+  strokeWeight(30);
+  int border = 50;
+  rect(-border / 4, -border / 4, width+border / 2, height+border / 2, border);
+  fill(255);
+  textFont(createFont("Calisto MT Bold", 30));
+  textAlign(CENTER);
+  text("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", width / 2, height / 3 + 60) ;
+}
+
+void initKb(){
+   // first row
+  int w = 10;
+  int h = 10;
+  int charStart = 'A';
+  int x = 0;
+  int y = 90 + (6 * (tileSideLength + padding));
+  for (int i = 0; i < 10; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
+  }
+  
+  // second row
+  x += 5;
+  for (int i = 0; i < 9; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
+  }
+  x += 5;
+  for (int i = 0; i < 7; i++) {
+    keyboard[i] = new Key(x,y,w,h,(char)charStart);
+    charStart++;
+    x += w;
+    y += h;
+  }
+
+}
+
 void displayKb() {
   for (Key i : keyboard) {
-    i.display();
+    //i.display();
   }
 }
 
@@ -192,50 +242,6 @@ void kbPressed() {
       tiles[guessNum][min(4, charNum)].STATE = TileState.SELECTED;
     }
   }
-}
-
-void draw() {
-  background(bgColor);
-  printTitle();
-  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-  if (gState == GameState.VICTORY) displayVictory();
-  if (gState == GameState.DEFEAT) displayDefeat();
-}
-
-//Prints the title;
-void printTitle() {
-  stroke(50);
-  strokeWeight(2);
-  line(30, 70, width-30, 70);
-  textFont(title);
-  textAlign(CENTER);
-  fill(255);
-  text("Wordle", width / 2, 60);
-}
-
-//Displays victory screen
-void displayVictory() {
-  fill(255, 255, 255, 180);
-  noStroke();
-  rect(40, height / 3, width - 80, 100, 10);
-  textFont(text);
-  fill(0);
-  textAlign(CENTER);
-  //using the ? as intended, to make code harder to read
-  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 3 + 60);
-}
-
-//Displays defeat screen
-void displayDefeat() {
-  fill(80, 50, 50, 150);
-  stroke(255, 50, 50, 200);
-  strokeWeight(30);
-  int border = 50;
-  rect(-border / 4, -border / 4, width+border / 2, height+border / 2, border);
-  fill(255);
-  textFont(createFont("Calisto MT Bold", 30));
-  textAlign(CENTER);
-  text("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", width / 2, height / 3 + 60) ;
 }
 
 //Checks the inputted guess
