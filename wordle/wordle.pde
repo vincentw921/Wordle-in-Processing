@@ -13,7 +13,7 @@
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
-public enum State {
+public enum GameState {
   ONGOING,
     DEFEAT,
     VICTORY;
@@ -25,7 +25,7 @@ color bgColor;
 String[] inputWords, answerWords;
 String[] correctGuesses;
 Tile[][] tiles;
-State gState;
+GameState gState;
 PFont text, title;
 Key[] keyboard = new Key[28];
 
