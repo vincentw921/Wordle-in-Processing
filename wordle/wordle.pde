@@ -2,7 +2,13 @@
  *  ITS JUST WORDLE
  * BUT IN PROCESSING
  * WOW SO COOL
+ * Credits:
+ *   kelvin for doing some stuf
+ *   vin for doing other stuff
+ *   jeylnfish for the font source
+ *
  * TO DO:
+ *        Add hashmap to tile for colors, so colors are automatically updated with state.
  *        Add statistics to victory/death screen?
  *        Add Keyboard
  *        (maybe?) Add animation to revealing letters
@@ -15,39 +21,38 @@ public enum GameState {
   VICTORY;
 }
 
-int tileWidth, tileHeight, guessNum, charNum, invalidCount;
+int tileSideLength, guessNum, charNum, invalidCount;
 String ans;
-color bgcolor = color(200);
+color bgColor;
 String[] inputWords, answerWords;
 String[] correctGuesses;
 Tile[][] tiles;
 GameState gState;
 
 void setup() {
-  background(bgcolor);
-  size(600, 1100);
+  background(bgColor);
+  size(500, 1000);
   frameRate(30);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
   invalidCount = 0;
-  gState = GameState.ONGOING;
   ans = answerWords[int(random(answerWords.length))];
+  bgColor = color(19);
+  
   //Creates tiles
   tiles = new Tile[6][5];
-  
-  //TO DO: Figure out why the tile's positions is offset by a certain percentage
-  tileWidth = (width - 135) / tiles[0].length - 5;
-  tileHeight = tileWidth;
-  int y = -10;
+  int y = 90; //starting ypos
+  int padding = 5; //padding of tiles
+  tileSideLength = (width - 6 * padding)/tiles[0].length;
   for (Tile[] tRow : tiles) {
-    y += tileHeight + 10;
-    int x = 65;
+    int x = padding;
     for (int j = 0; j < tRow.length; j++) {
-      tRow[j] = new Tile(x, y);
-      x += tileWidth + 10;
+      tRow[j] = new Tile(x, y, tileSideLength);
+      x += tileSideLength + padding;
     }
+    y += tileSideLength + padding;
   }
 
   //sets status of the first row
@@ -56,7 +61,9 @@ void setup() {
 
   //displays tiles
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-
+  
+  gState = GameState.ONGOING;
+  
   println("Press space to print the answer");
   printTitle();
 }
@@ -69,6 +76,7 @@ void keyPressed() {
   if (key == '\n') {
     if (charNum < 5) return;
     if (checkGuess()) {
+      guessNum++;
       gState = GameState.VICTORY;
       return;
     }
@@ -102,7 +110,7 @@ void keyPressed() {
 }
 
 void draw() {
-  background(bgcolor);
+  background(bgColor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
   if (gState == GameState.VICTORY) displayVictory();
@@ -111,10 +119,13 @@ void draw() {
 
 //Prints the title;
 void printTitle() {
-  textFont(createFont("karnakcondensed-normal-700.ttf", 80));
+  stroke(50);
+  strokeWeight(2);
+  line(30, 70, width-30, 70);
+  textFont(createFont("karnakcondensed-normal-700.ttf", 60));
   textAlign(CENTER);
-  fill(0);
-  text("Wordle", width / 2, 75);
+  fill(255);
+  text("Wordle", width / 2, 60);
 }
 
 //Displays victory screen
@@ -126,7 +137,6 @@ void displayVictory() {
   fill(0);
   textAlign(CENTER);
   //using the ? as intended, to make code harder to read
-
   text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 2);
 }
 
