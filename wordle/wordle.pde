@@ -2,53 +2,59 @@
  *  ITS JUST WORDLE
  * BUT IN PROCESSING
  * WOW SO COOL
+ * Credits:
+ *   kelvin for doing some stuf
+ *   vin for doing other stuff
+ *   jeylnfish for the font source
+ *
  * TO DO:
- *        Add Victory/Loss screen
  *        Add Keyboard
  *        (maybe?) Add animation to revealing letters
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
-int tileWidth, tileHeight, guessNum, charNum;
-String ans;
-Tile[][] tiles;
-color bgcolor = color(200);
-String[] inputWords, answerWords;
-String[] correctGuesses;
-GameState gState;
-Key[] keyboard = new Key[28];
-
-public enum GameState {
+public enum State {
   ONGOING,
     DEFEAT,
     VICTORY;
 }
 
+int tileSideLength, guessNum, charNum, invalidCount;
+String ans;
+color bgColor;
+String[] inputWords, answerWords;
+String[] correctGuesses;
+Tile[][] tiles;
+State gState;
+PFont text, title;
+Key[] keyboard = new Key[28];
+
 void setup() {
-  background(bgcolor);
-  size(600, 600);
-  frameRate(30);
+  background(bgColor);
+  size(500, 1000);
+  frameRate(144);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
   charNum = 0;
-  gState = GameState.ONGOING;
+  invalidCount = 0;
   ans = answerWords[int(random(answerWords.length))];
-
+  bgColor = color(19);
+  text = createFont("Arial Bold", 30);
+  title = createFont("karnakcondensed-normal-700.ttf", 60);
+  
   //Creates tiles
   tiles = new Tile[6][5];
-  int ystart = 75; //starting y-coordinate of the first row
-  int tileAreaHeight = height * 2 / 5;
-  tileWidth = (width - 50) / tiles[0].length - 5;
-  tileHeight = tileAreaHeight / tiles.length - 5;
-  int y = ystart-50;
+  int y = 90; //starting ypos
+  int padding = 7; //padding of tiles
+  tileSideLength = (width - 6 * padding)/tiles[0].length;
   for (Tile[] tRow : tiles) {
-    y += tileHeight + 10;
-    int x = 20;
+    int x = padding;
     for (int j = 0; j < tRow.length; j++) {
-      tRow[j] = new Tile(x, y);
-      x += tileWidth + 10;
+      tRow[j] = new Tile(x, y, tileSideLength);
+      x += tileSideLength + padding;
     }
+    y += tileSideLength + padding;
   }
   
   // first row
@@ -86,7 +92,9 @@ void setup() {
 
   //displays tiles
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-
+  
+  gState = GameState.ONGOING;
+  
   println("Press space to print the answer");
   printTitle();
 }
@@ -98,31 +106,31 @@ void keyPressed() {
   //if enter key is pressed, make sure the input is valid before checking it.
   if (key == '\n') {
     if (charNum < 5) return;
-
     if (checkGuess()) {
+      guessNum++;
       gState = GameState.VICTORY;
       return;
     }
     guessNum++;
     charNum = 0;
-
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
       return;
     }
 
+    //the guess has already been calculated, now to update the new row's tiles
     for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
     tiles[guessNum][charNum].STATE = TileState.SELECTED;
-  } else if (key == '\b') {
+  } else if (key == '\b') {  //removes the current character and backs up a tile
     if (charNum == 0) return;
     if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].STATE = TileState.SELECTED;
     charNum--;
-  } else if (key == ' ') {
+  } else if (key == ' ') { //shows the answer
     println("Answer: " + ans);
   } else {
-    //make sure the inputted key is from A-Z, then input that into the tile
+    //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((int(Character.toLowerCase(key)) >= 97 && int(Character.toLowerCase(key)) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(key);
       tiles[guessNum][charNum].STATE = TileState.GUESSING;
@@ -187,7 +195,7 @@ void kbPressed() {
 }
 
 void draw() {
-  background(bgcolor);
+  background(bgColor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
   if (gState == GameState.VICTORY) displayVictory();
@@ -196,21 +204,25 @@ void draw() {
 
 //Prints the title;
 void printTitle() {
-  textFont(createFont("Calisto MT Bold", 80));
+  stroke(50);
+  strokeWeight(2);
+  line(30, 70, width-30, 70);
+  textFont(title);
   textAlign(CENTER);
-  fill(0);
-  text("wurdel", width / 2, 60);
+  fill(255);
+  text("Wordle", width / 2, 60);
 }
 
 //Displays victory screen
 void displayVictory() {
-  fill(255, 255, 255, 150);
+  fill(255, 255, 255, 180);
   noStroke();
-  rect(0, 0, width, height);
-  textFont(createFont("Calisto MT Bold", 30));
+  rect(40, height / 3, width - 80, 100, 10);
+  textFont(text);
   fill(0);
   textAlign(CENTER);
-  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 2);
+  //using the ? as intended, to make code harder to read
+  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 3 + 60);
 }
 
 //Displays defeat screen
@@ -223,8 +235,7 @@ void displayDefeat() {
   fill(255);
   textFont(createFont("Calisto MT Bold", 30));
   textAlign(CENTER);
-  text("6/6 valid guesses used.", width / 2, height / 2);
-  text("The answer was: " + ans, width / 2, height / 2 + 30);
+  text("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", width / 2, height / 3 + 60) ;
 }
 
 //Checks the inputted guess
@@ -242,6 +253,7 @@ boolean checkGuess() {
     }
   }
   if (!valid) {
+    invalidCount++;
     println("Not a valid input: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';

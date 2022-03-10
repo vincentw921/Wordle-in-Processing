@@ -9,54 +9,49 @@ public enum TileState {
 
 class Tile {
   color c;
-  int x, y;
+  int x, y, side;
   char ch;
   TileState STATE;
-
-  Tile(int x, int y) {
+  //HashMap<TileState, color> tileColor = new HashMap<TileState, color>();
+  public Tile(int x, int y, int side) {
     this.x = x;
     this.y = y;
-    c = color(100);
+    this.side = side;
     STATE = TileState.NOT_GUESSED;
     ch = ' ';
   }
 
   void display() {
-    //displays boxes
     strokeWeight(3);
+    stroke(60);
+    //displays boxes
     if (STATE == TileState.NOT_GUESSED) {
-      stroke(100);
-      c = color(200);
+      c = bgColor;
     } else if (STATE == TileState.GUESSED) {
-      strokeWeight(4);
-      stroke(0);
-      c = color(100);
+      c = color(60);
     } else if (STATE == TileState.GUESSING) {
-      strokeWeight(4);
-      stroke(255);
-      c = bgcolor;
+      stroke(88);
+      c = bgColor;
     } else if (STATE == TileState.SELECTED) {
-      strokeWeight(4);
-      stroke(color(255, 255, 0));
-      c = bgcolor;
+      stroke(127, 127, 0);
+      c = color(80);
     } else if (STATE == TileState.CORRECT_LETTER) {
-      strokeWeight(4);
-      stroke(0);
-      c = color(255, 255, 0);
+      stroke(181, 159, 59);
+      c = color(181, 159, 59);
+      
     } else if (STATE == TileState.CORRECT_PLACE) {
-      strokeWeight(4);
-      stroke(0);
-      c = color(0, 255, 0);
+      stroke(83, 141, 78);
+      c = color(83, 141, 78);
     }
     fill(c);
-    rect(x, y, tileWidth, tileHeight);
+    square(x, y, side);
 
     //Then displays the characters
-    textFont(createFont("Calisto MT", tileHeight * 0.8));
+    textFont(createFont("Arial Bold", side * 0.5));
     textAlign(CENTER);
     if (STATE != TileState.NOT_GUESSED) {
-      fill(0);
-      text(ch, x + tileWidth * 0.5, y + tileHeight * 0.8);
+      fill(255);
+      text(ch, x + side * 0.5, y + side * 0.7);
     }
   }
 }
