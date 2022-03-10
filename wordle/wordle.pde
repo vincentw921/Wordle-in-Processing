@@ -8,8 +8,6 @@
  *   jeylnfish for the font source
  *
  * TO DO:
- *        Add hashmap to tile for colors, so colors are automatically updated with state.
- *        Add statistics to victory/death screen?
  *        Add Keyboard
  *        (maybe?) Add animation to revealing letters
  *        How are you supposed to format headers like this?
@@ -133,7 +131,7 @@ void printTitle() {
 
 //Displays victory screen
 void displayVictory() {
-  fill(255, 255, 255, 150);
+  fill(255, 255, 255, 180);
   noStroke();
   rect(40, height / 3, width - 80, 100, 10);
   textFont(text);
@@ -145,15 +143,13 @@ void displayVictory() {
 
 //Displays defeat screen
 void displayDefeat() {
-  fill(80, 50, 50, 150);
-  stroke(255, 50, 50, 200);
-  int border = 50;
-  strokeWeight(border);
-  rect(-border / 4, -border / 4, width + border / 2, height + border / 2, border);
+  noStroke();
+  fill(255, 255, 255, 180);
+  rect(40, height / 3, width - 80, 100, 10);
   fill(0);
   textFont(text);
   textAlign(CENTER);
-  text("Correct answer: " + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "!", width / 2, height / 2) ;
+  text("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", width / 2, height / 3 + 60) ;
 }
 
 //Checks the inputted guess
