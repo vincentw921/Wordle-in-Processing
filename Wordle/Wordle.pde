@@ -35,7 +35,7 @@ Key[] keyboard;
 void setup() {
   background(bgColor);
   size(750, 1050);
-  frameRate(144);
+  frameRate(60);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
   guessNum = 0;
@@ -174,12 +174,11 @@ void kbPressed() {
   if (kPressed.equals("ENTER")) checkInputKey('\n');
   else if (kPressed.equals("BACKSPACE")) checkInputKey('\b');
   else checkInputKey(kPressed.charAt(0));
-  println("\"" + kPressed+ "\"");
 }
 
 void checkInputKey(char c) {
   //if the game isn't running, dont check for keyboard inputs
-  if (gState != GameState.ONGOING) return;
+  if (gState != GameState.ONGOING || animating) return;
 
   //if enter key is pressed, make sure the input is valid before checking it.
   if (c == '\n') {
