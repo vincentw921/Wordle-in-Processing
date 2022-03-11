@@ -1,10 +1,14 @@
 # Wordle-in-Processing
 A Wordle Game created in Processing 4
+
 CREATED BY: Vincent Wang and Kelvin Zhao
 
 To run: 
+
     - Download Processing 4.0 from https://processing.org/download
+    
     - Download https://github.com/vincentw921/Wordle-in-Processing as a .zip file, and extract it.
+    
     - Run wordle.pde
 
 Gameplay:
