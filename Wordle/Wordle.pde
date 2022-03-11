@@ -8,7 +8,7 @@
  *   jeylnfish for the font source
  *
  * TO DO:
- *        Add animations for:
+ *        Add animations for: (using animating boolean?)
  *          - Invalid word
  *          - Revealing tiles, one at a time
  *          - "bounce in" for when a character is added to a tile
@@ -24,6 +24,7 @@ public enum GameState {
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans;
 color bgColor, correctColor, closeColor, incorrectColor, keyColor;
+boolean animating;
 String[] inputWords, answerWords;
 String[] qwerty = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"};
 Tile[][] tiles;
@@ -40,6 +41,7 @@ void setup() {
   guessNum = 0;
   charNum = 0;
   invalidCount = 0;
+  animating = false;
   ans = answerWords[int(random(answerWords.length))];
   bgColor = color(19);
   correctColor = color(83, 141, 78);
@@ -49,7 +51,7 @@ void setup() {
   
   text = createFont("Arial Bold", 30);
   title = createFont("karnakcondensed-normal-700.ttf", 60);
-  
+
   //Creates tiles
   tiles = new Tile[6][5];
   int y = 90; //starting ypos
@@ -63,17 +65,16 @@ void setup() {
     }
     y += tileSideLength + padding;
   }
-  
+
   //initialize keyboard
   keyboard = new Key[28];
   initKb();
-  
 
   //displays tiles
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-  
+
   gState = GameState.ONGOING;
-  
+
   println("Press space to print the answer");
   printTitle();
 }
@@ -82,18 +83,18 @@ void draw() {
   background(bgColor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-  for(Key k : keyboard) k.display();
+  for (Key k : keyboard) k.display();
   if (gState == GameState.VICTORY) displayVictory();
   if (gState == GameState.DEFEAT) displayDefeat();
 }
 
-void mouseReleased(){
+void mouseReleased() {
   kbPressed();
 }
+
 void keyPressed() {
   checkInputKey(key);
 }
-
 
 //Prints the title;
 void printTitle() {
@@ -117,19 +118,19 @@ void displayDefeat() {
   textBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 3, width - 300, 100);
 }
 
-void initKb(){
+void initKb() {
   int gap = 8;
   int w = (width - (11 * gap)) / 10;
   int h = 80;
   int x = gap;
   int y = 90 + (6 * (tileSideLength + padding)) + 25;
   int i = 0;
-  
+
   for (; i < 10; i++) {
     keyboard[i] = new Key(x, y, w, h, qwerty[i]);
     x += w + gap;
   }
-  
+
   // second row
   x = gap * 2 + (w / 2);
   y += h + 1.5 * gap;
@@ -137,7 +138,7 @@ void initKb(){
     keyboard[i] = new Key(x, y, w, h, qwerty[i]);
     x += w + gap;
   }
-  
+
   //third row
   x = gap;
   y += h + 1.5 * gap;
@@ -152,7 +153,6 @@ void initKb(){
   }
   //backspace
   keyboard[i] = new Key(x, y, int(1.5 * w), h, qwerty[i]);
-
 }
 
 void kbPressed() {
@@ -167,17 +167,17 @@ void kbPressed() {
       break;
     }
   }
-  
+
   //if no key was pressed, stop
   if (kPressed.equals(" ")) return;
-  
-  if(kPressed.equals("ENTER")) checkInputKey('\n');
-  else if(kPressed.equals("BACKSPACE")) checkInputKey('\b');
+
+  if (kPressed.equals("ENTER")) checkInputKey('\n');
+  else if (kPressed.equals("BACKSPACE")) checkInputKey('\b');
   else checkInputKey(kPressed.charAt(0));
   println("\"" + kPressed+ "\"");
 }
 
-void checkInputKey(char c){
+void checkInputKey(char c) {
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING) return;
 
@@ -195,7 +195,6 @@ void checkInputKey(char c){
       gState = GameState.DEFEAT;
       return;
     }
-
   } else if (c == '\b') {  //removes the current character and backs up a tile
     if (charNum == 0) return;
     tiles[guessNum][charNum-1].ch = ' ';
@@ -213,7 +212,7 @@ void checkInputKey(char c){
   }
 }
 
-void textBox(String msg, int x, int y, int w, int h){
+void textBox(String msg, int x, int y, int w, int h) {
   fill(255, 255, 255, 210);
   noStroke();
   rect(x, y, w, h, 10);
@@ -251,7 +250,6 @@ boolean checkGuess() {
   }
 
   //now checks each character with answer, starting by marking each tile as wrong before updating the correct ones
-  
   for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].tState = TileState.GUESSED;
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
@@ -273,37 +271,36 @@ boolean checkGuess() {
       }
     }
   }
-  
+
   //now adds those states to the onscreen keyboard
-  for(int i = 0; i < guess.length(); i++){
-    if(tiles[guessNum][i].tState == TileState.CORRECT_PLACE) {
+  for (int i = 0; i < guess.length(); i++) {
+    if (tiles[guessNum][i].tState == TileState.CORRECT_PLACE) {
       //find corresponding key
-      for(Key ky : keyboard){
-        if(ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
-        if(ky.k.charAt(0) == tiles[guessNum][i].ch){
+      for (Key ky : keyboard) {
+        if (ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
+        if (ky.k.charAt(0) == tiles[guessNum][i].ch) {
           ky.kState = KeyState.CORRECT_PLACE;
           break;
         }
       }
-    } else if(tiles[guessNum][i].tState == TileState.CORRECT_LETTER) {
-      for(Key ky : keyboard){
-        if(ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
-        if(ky.k.charAt(0) == tiles[guessNum][i].ch && ky.kState != KeyState.CORRECT_PLACE){
+    } else if (tiles[guessNum][i].tState == TileState.CORRECT_LETTER) {
+      for (Key ky : keyboard) {
+        if (ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
+        if (ky.k.charAt(0) == tiles[guessNum][i].ch && ky.kState != KeyState.CORRECT_PLACE) {
           ky.kState = KeyState.CORRECT_LETTER;
           break;
         }
       }
     } else {
-      for(Key ky : keyboard){
-        if(ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
-        if(ky.k.charAt(0) == tiles[guessNum][i].ch && ky.kState == KeyState.NOT_GUESSED){
+      for (Key ky : keyboard) {
+        if (ky.k.length() > 1) continue; //makes sure "ENTER" and "BACKSPACE" aren't used
+        if (ky.k.charAt(0) == tiles[guessNum][i].ch && ky.kState == KeyState.NOT_GUESSED) {
           ky.kState = KeyState.GUESSED;
           break;
         }
       }
     }
   }
-  
 
   //displays the tiles
   for (Tile t : tiles[guessNum]) t.display();

@@ -35,7 +35,6 @@ class Tile {
     } else if (tState == TileState.CORRECT_LETTER) {
       stroke(closeColor);
       c = closeColor;
-      
     } else if (tState == TileState.CORRECT_PLACE) {
       stroke(correctColor);
       c = correctColor;
