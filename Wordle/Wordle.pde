@@ -31,6 +31,8 @@ Tile[][] tiles;
 GameState gState;
 PFont text, title;
 Key[] keyboard;
+TextBox invalidText;
+TextBox endText;
 
 void setup() {
   background(bgColor);
@@ -48,7 +50,7 @@ void setup() {
   closeColor = color(181, 159, 59);
   incorrectColor = color(60);
   keyColor = color(129, 131, 132);
-  
+
   text = createFont("Arial Bold", 30);
   title = createFont("karnakcondensed-normal-700.ttf", 60);
 
@@ -73,10 +75,12 @@ void setup() {
   //displays tiles
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
 
+  //sets game state
   gState = GameState.ONGOING;
 
-  println("Press space to print the answer");
-  printTitle();
+  //initializes text box for when needed
+  invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
+  endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
 }
 
 void draw() {
@@ -84,8 +88,8 @@ void draw() {
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
   for (Key k : keyboard) k.display();
-  if (gState == GameState.VICTORY) displayVictory();
-  if (gState == GameState.DEFEAT) displayDefeat();
+  invalidText.display();
+  endText.display();
 }
 
 void mouseReleased() {
@@ -109,13 +113,15 @@ void printTitle() {
 
 //Displays victory screen
 void displayVictory() {
-  //Using ? as intended, to make code impossibly confusing to read. here it's only being used to be grammatically accurate
-  textBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 3, width - 300, 100);
+  //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
+  endText = new TextBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 3, width - 300, 100);
+  endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
 //Displays defeat screen
 void displayDefeat() {
-  textBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 3, width - 300, 100);
+  endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 3, width - 300, 100);
+  endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
 void initKb() {
@@ -186,12 +192,14 @@ void checkInputKey(char c) {
     if (checkGuess()) {
       guessNum++;
       gState = GameState.VICTORY;
+      displayVictory();
       return;
     }
     guessNum++;
     charNum = 0;
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
+      displayDefeat();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile
@@ -209,16 +217,6 @@ void checkInputKey(char c) {
       charNum++;
     }
   }
-}
-
-void textBox(String msg, int x, int y, int w, int h) {
-  fill(255, 255, 255, 210);
-  noStroke();
-  rect(x, y, w, h, 10);
-  textFont(text);
-  fill(0);
-  textAlign(CENTER);
-  text(msg, (2 * x + w) / 2, y + 0.6 * h);
 }
 
 //Checks the inputted guess
@@ -240,10 +238,9 @@ boolean checkGuess() {
     println("Not a valid input: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
-      t.c = color(100);
       t.tState = TileState.NOT_GUESSED;
-      t.display();
     }
+    invalidText.displayStart(frameRate * 2, frameRate / 2);
     guessNum--;
     return false;
   }

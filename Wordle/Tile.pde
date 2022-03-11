@@ -7,12 +7,12 @@ public enum TileState {
   CORRECT_PLACE;
 }
 
-class Tile {
+public class Tile {
   color c;
   int x, y, side;
   char ch;
   TileState tState;
-  //HashMap<TileState, color> tileColor = new HashMap<TileState, color>();
+
   public Tile(int x, int y, int side) {
     this.x = x;
     this.y = y;
