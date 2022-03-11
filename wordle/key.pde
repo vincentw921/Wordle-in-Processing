@@ -1,20 +1,23 @@
 public enum KeyState{
   NOT_GUESSED,
   GUESSED,
-  CORRECT_LETTER,
-  CORRECT_PLACE;
+  CORRECT_PLACE,
+  CORRECT_LETTER;
 }
 
 class Key {
   int x, y, w, h;
   String k;
+  color c;
   KeyState kState;
+  
   public Key(int x, int y, int w, int h, String k) {
     this.k = k;
     this.x = x;
     this.y = y;
     this.w = w;
     this.h = h;
+    c = keyColor;
     kState = KeyState.NOT_GUESSED;
   }
   public Key(int x, int y, int s, String k) {
@@ -23,7 +26,16 @@ class Key {
   
   void display() {
     noStroke();
-    fill(keyColor);
+    if(kState == KeyState.NOT_GUESSED){
+      c = keyColor;
+    } else if(kState == KeyState.GUESSED){
+      c = incorrectColor;
+    } else if(kState == KeyState.CORRECT_LETTER){
+      c = closeColor;
+    } else {
+      c = correctColor;
+    }
+    fill(c);
     rect(x, y, w, h, 6);
     fill(255);
     textAlign(CENTER);

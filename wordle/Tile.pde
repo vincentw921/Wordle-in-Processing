@@ -11,13 +11,13 @@ class Tile {
   color c;
   int x, y, side;
   char ch;
-  TileState STATE;
+  TileState tState;
   //HashMap<TileState, color> tileColor = new HashMap<TileState, color>();
   public Tile(int x, int y, int side) {
     this.x = x;
     this.y = y;
     this.side = side;
-    STATE = TileState.NOT_GUESSED;
+    tState = TileState.NOT_GUESSED;
     ch = ' ';
   }
 
@@ -25,21 +25,18 @@ class Tile {
     strokeWeight(3);
     stroke(60);
     //displays boxes
-    if (STATE == TileState.NOT_GUESSED) {
+    if (tState == TileState.NOT_GUESSED) {
       c = bgColor;
-    } else if (STATE == TileState.GUESSED) {
+    } else if (tState == TileState.GUESSED) {
       c = incorrectColor;
-    } else if (STATE == TileState.GUESSING) {
+    } else if (tState == TileState.GUESSING) {
       stroke(88);
       c = bgColor;
-    } else if (STATE == TileState.SELECTED) {
-      stroke(127, 127, 0);
-      c = color(80);
-    } else if (STATE == TileState.CORRECT_LETTER) {
+    } else if (tState == TileState.CORRECT_LETTER) {
       stroke(closeColor);
       c = closeColor;
       
-    } else if (STATE == TileState.CORRECT_PLACE) {
+    } else if (tState == TileState.CORRECT_PLACE) {
       stroke(correctColor);
       c = correctColor;
     }
@@ -49,7 +46,7 @@ class Tile {
     //Then displays the characters
     textFont(createFont("Arial Bold", side * 0.5));
     textAlign(CENTER);
-    if (STATE != TileState.NOT_GUESSED) {
+    if (tState != TileState.NOT_GUESSED) {
       fill(255);
       text(ch, x + side * 0.5, y + side * 0.7);
     }
