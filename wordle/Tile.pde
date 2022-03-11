@@ -28,7 +28,7 @@ class Tile {
     if (STATE == TileState.NOT_GUESSED) {
       c = bgColor;
     } else if (STATE == TileState.GUESSED) {
-      c = color(60);
+      c = incorrectColor;
     } else if (STATE == TileState.GUESSING) {
       stroke(88);
       c = bgColor;
@@ -36,12 +36,12 @@ class Tile {
       stroke(127, 127, 0);
       c = color(80);
     } else if (STATE == TileState.CORRECT_LETTER) {
-      stroke(181, 159, 59);
-      c = color(181, 159, 59);
+      stroke(closeColor);
+      c = closeColor;
       
     } else if (STATE == TileState.CORRECT_PLACE) {
-      stroke(83, 141, 78);
-      c = color(83, 141, 78);
+      stroke(correctColor);
+      c = correctColor;
     }
     fill(c);
     square(x, y, side);

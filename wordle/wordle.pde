@@ -21,17 +21,18 @@ public enum GameState {
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans;
-color bgColor;
+color bgColor, correctColor, closeColor, incorrectColor, keyColor;
+int[] keyStates;
 String[] inputWords, answerWords;
-String[] correctGuesses;
+String[] qwerty = {"q", "w", "e", "r", "t", "y", "u", "i", "o", "p", "a", "s", "d", "f", "g", "h", "j", "k", "l", "ENTER", "z", "x", "c", "v", "b", "n", "m", "BACKSPACE"};
 Tile[][] tiles;
 GameState gState;
 PFont text, title;
-Key[] keyboard = new Key[28];
+Key[] keyboard;
 
 void setup() {
   background(bgColor);
-  size(500, 1000);
+  size(750, 1050);
   frameRate(144);
   inputWords = loadStrings("input-words.txt");
   answerWords = loadStrings("answer-words.txt");
@@ -40,16 +41,21 @@ void setup() {
   invalidCount = 0;
   ans = answerWords[int(random(answerWords.length))];
   bgColor = color(19);
+  correctColor = color(83, 141, 78);
+  closeColor = color(181, 159, 59);
+  incorrectColor = color(60);
+  keyColor = color(129, 131, 132);
+  
   text = createFont("Arial Bold", 30);
   title = createFont("karnakcondensed-normal-700.ttf", 60);
   
   //Creates tiles
   tiles = new Tile[6][5];
   int y = 90; //starting ypos
-  padding = 7; //padding of tiles
-  tileSideLength = (width - 6 * padding)/tiles[0].length;
+  padding = 10; //padding of tiles
+  tileSideLength = (width - 6 * padding)/(tiles[0].length + 2);
   for (Tile[] tRow : tiles) {
-    int x = padding;
+    int x = padding + tileSideLength;
     for (int j = 0; j < tRow.length; j++) {
       tRow[j] = new Tile(x, y, tileSideLength);
       x += tileSideLength + padding;
@@ -58,6 +64,8 @@ void setup() {
   }
   
   //initialize keyboard
+  keyStates = new int[26];
+  keyboard = new Key[28];
   initKb();
   
   //sets status of the first row
@@ -77,15 +85,14 @@ void draw() {
   background(bgColor);
   printTitle();
   for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
-  for(int i = 0; i < keyboard.length; i++){
-    println(i);
-    keyboard[i].display();
-    
-  }
+  for(Key k : keyboard) k.display();
   if (gState == GameState.VICTORY) displayVictory();
   if (gState == GameState.DEFEAT) displayDefeat();
 }
 
+void mouseReleased(){
+  kbPressed();
+}
 void keyPressed() {
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING) return;
@@ -141,58 +148,50 @@ void printTitle() {
 
 //Displays victory screen
 void displayVictory() {
-  fill(255, 255, 255, 180);
-  noStroke();
-  rect(40, height / 3, width - 80, 100, 10);
-  textFont(text);
-  fill(0);
-  textAlign(CENTER);
-  //using the ? as intended, to make code harder to read
-  text(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", width / 2, height / 3 + 60);
+  //Using ? as intended, to make code impossibly confusing to read. here it's only being used to be grammatically accurate
+  textBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 3, width - 300, 100);
 }
 
 //Displays defeat screen
 void displayDefeat() {
-  fill(80, 50, 50, 150);
-  stroke(255, 50, 50, 200);
-  strokeWeight(30);
-  int border = 50;
-  rect(-border / 4, -border / 4, width+border / 2, height+border / 2, border);
-  fill(255);
-  textFont(createFont("Calisto MT Bold", 30));
-  textAlign(CENTER);
-  text("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", width / 2, height / 3 + 60) ;
+  textBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 3, width - 300, 100);
 }
 
 void initKb(){
-   // first row
-  int w = 45;
-  int h = 45;
-  int charStart = 'A';
-  int x = 0;
-  int y = 90 + (6 * (tileSideLength + padding));
+  int gap = 8;
+  int w = (width - (11 * gap)) / 10;
+  int h = 80;
+  int x = gap;
+  int y = 90 + (6 * (tileSideLength + padding)) + 25;
   int i = 0;
+  
   for (; i < 10; i++) {
-    keyboard[i] = new Key(x,y,w,(char)charStart);
-    charStart++;
-    x += w + 5;
+    keyboard[i] = new Key(x, y, w, h, qwerty[i]);
+    x += w + gap;
   }
   
   // second row
-  y += h + 5;
+  x = gap * 2 + (w / 2);
+  y += h + 1.5 * gap;
   for (; i < 19; i++) {
-    keyboard[i] = new Key(x,y,w,(char)charStart);
-    charStart++;
-    x += w + 5;
+    keyboard[i] = new Key(x, y, w, h, qwerty[i]);
+    x += w + gap;
   }
   
   //third row
-  y += h + 5;
-  for (; i < 28; i++) {
-    keyboard[i] = new Key(x,y,w,h,(char)charStart);
-    charStart++;
-    x += w + 5;
+  x = gap;
+  y += h + 1.5 * gap;
+  //enter
+  keyboard[i] = new Key(x, y, int(gap + 1.5 * w), h, qwerty[i]);
+  x += gap;
+  i++;
+  x += (3 * w) / 2 + gap;
+  for (; i < 27; i++) {
+    keyboard[i] = new Key(x, y, w, h, qwerty[i]);
+    x += w + gap;
   }
+  //backspace
+  keyboard[i] = new Key(x, y, int(1.5 * w), h, qwerty[i]);
 
 }
 
@@ -201,13 +200,19 @@ void kbPressed() {
   if (gState != GameState.ONGOING) return;
 
   //if enter key is pressed, make sure the input is valid before checking it.
-  char kPressed = ' ';
+  String kPressed = " ";
   for (Key i : keyboard) {
     if (i.isPressed()) {
       kPressed = i.k;
+      break;
     }
   }
-  if (kPressed == '\n') {
+  
+  //if no key was pressed, stop
+  if (kPressed.equals(" ")) return;
+  
+  //if key is enter
+  if (kPressed == "ENTER") {
     if (charNum < 5) return;
 
     if (checkGuess()) {
@@ -224,24 +229,34 @@ void kbPressed() {
 
     for (Tile t : tiles[guessNum]) t.STATE = TileState.GUESSING;
     tiles[guessNum][charNum].STATE = TileState.SELECTED;
-  } else if (kPressed == '\b') {
+    
+  } else if (kPressed == "BACKSPACE") {
     if (charNum == 0) return;
     if (charNum < 5) tiles[guessNum][charNum].STATE = TileState.GUESSING;
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].STATE = TileState.SELECTED;
     charNum--;
-  } else if (key == ' ') {
-    println("Answer: " + ans);
   } else {
     //make sure the inputted key is from A-Z, then input that into the tile
-    char toLower = Character.toLowerCase(kPressed);
-    if ((toLower >= 97 && toLower <= 122) && charNum < 5) {
-      tiles[guessNum][charNum].ch = toLower;
+    char toUpper = Character.toLowerCase(kPressed.charAt(0));
+    if ((toUpper >= 97 && toUpper <= 122) && charNum < 5) {
+      toUpper = Character.toUpperCase(toUpper);
+      tiles[guessNum][charNum].ch = toUpper;
       tiles[guessNum][charNum].STATE = TileState.GUESSING;
       charNum++;
       tiles[guessNum][min(4, charNum)].STATE = TileState.SELECTED;
     }
   }
+}
+
+void textBox(String msg, int x, int y, int w, int h){
+  fill(255, 255, 255, 210);
+  noStroke();
+  rect(x, y, w, h, 10);
+  textFont(text);
+  fill(0);
+  textAlign(CENTER);
+  text(msg, (2 * x + w) / 2, y + 0.6 * h);
 }
 
 //Checks the inputted guess
