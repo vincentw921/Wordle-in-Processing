@@ -1,5 +1,6 @@
 # Wordle-in-Processing
 A Wordle Game created in Processing 4
+
 CREATED BY: Vincent Wang and Kelvin Zhao
 
 To run: 
