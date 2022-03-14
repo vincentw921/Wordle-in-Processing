@@ -34,7 +34,17 @@ Key[] keyboard;
 TextBox invalidText;
 TextBox endText;
 
+int numWins;
+PrintWriter wins;
+
 void setup() {
+  wins = createWriter("save.txt");
+  if (loadStrings("save.txt").length == 0) {
+    numWins = 0;
+  } else {
+    numWins = int(loadStrings("save.txt")[0]);
+  }
+  saveStrings("save.txt",new String[]{});
   background(bgColor);
   size(750, 1050);
   frameRate(60);
@@ -194,6 +204,10 @@ void checkInputKey(char c) {
       guessNum++;
       gState = GameState.VICTORY;
       displayVictory();
+      numWins++;
+      wins.println(numWins);
+      wins.flush();
+      wins.close();
       return;
     }
     guessNum++;
