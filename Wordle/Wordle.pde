@@ -271,6 +271,9 @@ boolean checkGuess() {
     }
   }
   //now starts the flip animation for all of them at the same time
+  for(Tile t : tiles[guessNum]){
+    t.animateStart(frameCount, frameRate * 0.5);
+  }
   //now adds those states to the onscreen keyboard
   for (int i = 0; i < guess.length(); i++) {
     if (tiles[guessNum][i].tState == TileState.CORRECT_PLACE) {
@@ -302,6 +305,5 @@ boolean checkGuess() {
   }
 
   //displays the tiles
-  for (Tile t : tiles[guessNum]) t.display();
   return guess.equals(ans);
 }

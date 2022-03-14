@@ -39,6 +39,7 @@ public class Tile {
       if (side - (2 * (frameCount - startFrame) * change) >= 0) {
         fill(bgColor);
         stroke(88);
+        rect(x, y + (frameCount - startFrame) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
       } else {
         if (tState == TileState.NOT_GUESSED) {
           c = bgColor;
@@ -54,8 +55,10 @@ public class Tile {
           stroke(correctColor);
           c = correctColor;
         }
+        fill(c);
+        rect(x, y + (frameCount - (startFrame + 0.5 * animateTime)) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
       }
-      rect(x, y + side / animateTime, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
+      return;
     }
     if (tState == TileState.NOT_GUESSED) {
       c = bgColor;
