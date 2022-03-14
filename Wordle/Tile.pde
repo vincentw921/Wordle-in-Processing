@@ -30,9 +30,20 @@ public class Tile {
     strokeWeight(3);
     stroke(60);
     //displays boxes
-    if (animate) {
+    if (frameCount < startFrame) {
+      fill(bgColor);
+      stroke(88);
+      square(x, y, side);
+      fill(255);
+      textFont(createFont("Arial Bold", side * 0.5));
+      textAlign(CENTER);
+      text(ch, x + side * 0.5, y + side * 0.7);
+      return;
+    }
+    if (frameCount >= startFrame && frameCount < startFrame + animateTime) {
       if (animateTime + startFrame <= frameCount) {
-        animate = false;
+        startFrame = 0;
+        animateTime = 0;
         return;
       }
       float change = side / animateTime;
