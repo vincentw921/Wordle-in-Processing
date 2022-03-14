@@ -40,6 +40,7 @@ public class Tile {
       text(ch, x + side * 0.5, y + side * 0.7);
     } else if (frameCount >= startFrame && frameCount < startFrame + animateTime) { //during animation, change tile size based on frameCount
       if (animateTime + startFrame <= frameCount) { //if frameCount past animateTime, end the animation and reset the time values to placeholding values
+        animate = false;
         startFrame = 0;
         animateTime = 0;
         return;
@@ -48,7 +49,8 @@ public class Tile {
         fill(bgColor);
         stroke(88);
         rect(x, y + (frameCount - startFrame) * (side / animateTime), side, side - (2 * (frameCount - startFrame) * (side / animateTime))); //height goes from side to 0 in snimateTime - startFrame / 2 frames
-      } else {  //color the tile accordingly
+        textFont(createFont("Arial Bold", 30)); 
+    } else {  //2nd half of flip, color the tile accordingly
         if (tState == TileState.GUESSED) {
           c = incorrectColor;
         } else if (tState == TileState.CORRECT_LETTER) {
@@ -63,6 +65,7 @@ public class Tile {
       }
       return;
     } else { //If animation is over/not initiated, color accordingly
+      animate = false;
       if (tState == TileState.NOT_GUESSED) {
         c = bgColor;
       } else if (tState == TileState.GUESSED) {

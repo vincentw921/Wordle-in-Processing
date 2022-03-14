@@ -10,8 +10,9 @@
  * TO DO:
  *        Add animations for: (using animating boolean?)
  *          - Invalid word
- *          - Revealing tiles, one at a time
+ *          - Revealing tiles, adding text to change its height
  *          - "bounce in" for when a character is added to a tile
+ *        Remake checkGuess() in order to be able to delay updates to tiles
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
@@ -86,7 +87,11 @@ void setup() {
 void draw() {
   background(bgColor);
   printTitle();
-  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
+  boolean draw = true;
+  for (Tile[] tRow : tiles) for (Tile t : tRow) {
+    if (t.animate || !draw) draw = false;
+    t.display();
+  }
   for (Key k : keyboard) k.display();
   invalidText.display();
   endText.display();
