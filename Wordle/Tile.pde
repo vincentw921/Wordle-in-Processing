@@ -56,7 +56,7 @@ public class Tile {
           c = correctColor;
         }
         fill(c);
-        rect(x, y + (frameCount - (startFrame + 0.5 * animateTime)) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
+        rect(x, (y + 0.5 * side) + (frameCount - (startFrame + 0.5 * animateTime)) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
       }
       return;
     }
