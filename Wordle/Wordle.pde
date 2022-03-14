@@ -185,10 +185,11 @@ void kbPressed() {
 void checkInputKey(char c) {
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING || animating) return;
-
+  
   //if enter key is pressed, make sure the input is valid before checking it.
   if (c == '\n') {
     if (charNum < 5) return;
+    animating = true;
     if (checkGuess()) {
       guessNum++;
       gState = GameState.VICTORY;
@@ -210,6 +211,7 @@ void checkInputKey(char c) {
   } else if (c == ' ') { //shows the answer
     println("Answer: " + ans);
   } else {
+    animating = true;
     //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((Character.toLowerCase(c) >= 97 && Character.toLowerCase(c) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(c);
@@ -217,6 +219,7 @@ void checkInputKey(char c) {
       charNum++;
     }
   }
+  animating = false;
 }
 
 //Checks the inputted guess
@@ -240,7 +243,7 @@ boolean checkGuess() {
       t.ch = ' ';
       t.tState = TileState.NOT_GUESSED;
     }
-    invalidText.displayStart(frameRate * 2, frameRate / 2);
+    invalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
     guessNum--;
     return false;
   }
@@ -267,7 +270,7 @@ boolean checkGuess() {
       }
     }
   }
-
+  //now starts the flip animation for all of them at the same time
   //now adds those states to the onscreen keyboard
   for (int i = 0; i < guess.length(); i++) {
     if (tiles[guessNum][i].tState == TileState.CORRECT_PLACE) {

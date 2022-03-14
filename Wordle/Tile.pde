@@ -1,22 +1,27 @@
 public enum TileState {
   NOT_GUESSED,
-  GUESSING,
-  SELECTED,
-  GUESSED,
-  CORRECT_LETTER,
-  CORRECT_PLACE;
+    GUESSING,
+    SELECTED,
+    GUESSED,
+    CORRECT_LETTER,
+    CORRECT_PLACE;
 }
 
 public class Tile {
-  color c;
-  int x, y, side;
+  int startFrame, x, y, side;
+  float animateTime;
+  boolean animate;
   char ch;
+  color c;
   TileState tState;
 
   public Tile(int x, int y, int side) {
     this.x = x;
     this.y = y;
     this.side = side;
+    startFrame = 0;
+    animateTime = 0;
+    animate = false;
     tState = TileState.NOT_GUESSED;
     ch = ' ';
   }
@@ -25,6 +30,33 @@ public class Tile {
     strokeWeight(3);
     stroke(60);
     //displays boxes
+    if (animate) {
+      if (animateTime + startFrame <= frameCount) {
+        animate = false;
+        return;
+      }
+      float change = side / animateTime;
+      if (side - (2 * (frameCount - startFrame) * change) >= 0) {
+        fill(bgColor);
+        stroke(88);
+      } else {
+        if (tState == TileState.NOT_GUESSED) {
+          c = bgColor;
+        } else if (tState == TileState.GUESSED) {
+          c = incorrectColor;
+        } else if (tState == TileState.GUESSING) {
+          stroke(88);
+          c = bgColor;
+        } else if (tState == TileState.CORRECT_LETTER) {
+          stroke(closeColor);
+          c = closeColor;
+        } else if (tState == TileState.CORRECT_PLACE) {
+          stroke(correctColor);
+          c = correctColor;
+        }
+      }
+      rect(x, y + side / animateTime, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
+    }
     if (tState == TileState.NOT_GUESSED) {
       c = bgColor;
     } else if (tState == TileState.GUESSED) {
@@ -49,5 +81,10 @@ public class Tile {
       fill(255);
       text(ch, x + side * 0.5, y + side * 0.7);
     }
+  }
+  void animateStart(int startFrame, float animateTime) {
+    animate = true;
+    this.animateTime = animateTime;
+    this.startFrame = startFrame;
   }
 }

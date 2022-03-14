@@ -32,9 +32,9 @@ class TextBox {
     color currTextC = textC;
     if (startFrame + showTime < frameCount && startFrame + showTime + fadeTime > frameCount) { //fading time
       currC = color(red(c), blue(c), green(c), (((startFrame + showTime + fadeTime) - frameCount) * alpha(c)) / fadeTime);
-      currTextC = color(red(textC), green(textC), blue(textC), (((startFrame + showTime + fadeTime) - frameCount) * alpha(c)) / fadeTime);
+      currTextC = color(red(textC), green(textC), blue(textC), (((startFrame + showTime + fadeTime) - frameCount) * alpha(textC)) / fadeTime);
     }
-    if (startFrame + showTime + fadeTime <= frameCount) { //past fading time
+    if (startFrame + showTime + fadeTime <= frameCount) { //past fading time, so stop display
       show = false;
       return;
     }
