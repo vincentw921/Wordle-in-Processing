@@ -44,7 +44,7 @@ class TextBox {
     textFont(text);
     fill(currTextC);
     textAlign(CENTER);
-    text(msg, (2 * x + w) / 2, y + 0.6 * h);
+    text(msg, (2 * x + w) / 2, y + 50);
   }
   public TextBox() {
     this("No message", 300, height / 3, width - 300, 100);

@@ -17,13 +17,13 @@
  ******************************************************************************************************/
 
 public enum GameState {
-    ONGOING,
-    DEFEAT,
-    VICTORY;
+  ONGOING,
+  DEFEAT,
+  VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
-String ans, buttonFile;
+String ans, buttonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, keyColor;
 boolean animating;
 String[] inputWords, answerWords;
@@ -36,20 +36,25 @@ TextBox invalidText;
 TextBox endText;
 Button retryButton;
 
-int totAttempts;
+int totAttempts, totWins, maxStreak, curStreak;
 int[] numWins;
-PrintWriter wins;
-int maxStreak;
-int curStreak;
+PrintWriter wr;
 
 void setup() {
   numWins = new int[6];
-  totAttempts = int(loadStrings("save.txt")[0]) + 1;
+  totWins = 0;
+  saveFile = "data/save.txt";
+  String[] data = loadStrings(saveFile);
+  totAttempts = int(data[0]) + 1;
   for (int i = 1; i < 7; i++) {
-    numWins[i-1] = int(loadStrings("save.txt")[i]);
+    numWins[i-1] = int(data[i]);
+    totWins += numWins[i-1];
   }
-  maxStreak = int(loadStrings("save.txt")[7]);
-  curStreak = int(loadStrings("save.txt")[8]);
+  if(data.length > 8){
+    maxStreak = int(data[8]);
+    curStreak = int(data[7]);
+  } 
+  
   background(bgColor);
   size(750, 1050);
   frameRate(60);
@@ -143,7 +148,8 @@ void printTitle() {
 //Displays victory screen
 void displayVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  endText = new TextBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 4, width - 300, 100);
+  String winCount = totWins == 1 ? "Nice, you've won " + totWins + " time!" : "Nice, you've won " + totWins + " times!";
+  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 4, width - 300, 300);
   endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
@@ -222,29 +228,39 @@ void checkInputKey(char c) {
     if (checkGuess()) {
       guessNum++;
       gState = GameState.VICTORY;
-      displayVictory();
       numWins[guessNum-1]++;
-      wins = createWriter("save.txt");
-      wins.println(totAttempts);
+      totWins++;
+      totAttempts++;
+      curStreak++;
+      if(curStreak > maxStreak) maxStreak = curStreak;
+      displayVictory();
+      wr = createWriter(saveFile);
+      wr.println(totAttempts);
       for (int i : numWins) {
-        wins.println(i);
+        wr.println(i);
       }
-      wins.flush();
-      wins.close();
+      wr.println(curStreak);
+      wr.println(maxStreak);
+      wr.flush();
+      wr.close();
       return;
     }
     guessNum++;
     charNum = 0;
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
+      totAttempts++;
+      curStreak = 0;
       displayDefeat();
-      wins = createWriter("save.txt");
-      wins.println(totAttempts);
+      wr = createWriter(saveFile);
+      wr.println(totAttempts);
       for (int i : numWins) {
-        wins.println(i);
+        wr.println(i);
       }
-      wins.flush();
-      wins.close();
+      wr.println(curStreak);
+      wr.println(maxStreak);
+      wr.flush();
+      wr.close();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile
