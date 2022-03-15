@@ -34,6 +34,7 @@ PFont text, title;
 Key[] keyboard;
 TextBox invalidText;
 TextBox endText;
+Button retryButton;
 
 void setup() {
   background(bgColor);
@@ -82,6 +83,9 @@ void setup() {
   //initializes text box for when needed
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
+  
+  //iniitializes retry button
+  retryButton = new Button(width - 50, height = 200, 50);
 }
 
 void draw() {
@@ -98,6 +102,7 @@ void draw() {
 }
 
 void mouseReleased() {
+  retryButton.checkClicked();
   kbPressed();
 }
 
