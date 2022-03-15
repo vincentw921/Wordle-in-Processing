@@ -39,13 +39,7 @@ int numWins;
 PrintWriter wins;
 
 void setup() {
-  wins = createWriter("save.txt");
-  if (loadStrings("save.txt").length == 0) {
-    numWins = 0;
-  } else {
-    numWins = int(loadStrings("save.txt")[0]);
-  }
-  saveStrings("save.txt",new String[]{});
+  numWins = int(loadStrings("save.txt")[0]);
   background(bgColor);
   size(750, 1050);
   frameRate(60);
@@ -210,6 +204,7 @@ void checkInputKey(char c) {
       gState = GameState.VICTORY;
       displayVictory();
       numWins++;
+      wins = createWriter("save.txt");
       wins.println(numWins);
       wins.flush();
       wins.close();
