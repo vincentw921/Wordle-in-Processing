@@ -49,11 +49,11 @@ void setup() {
     numWins[i-1] = int(data[i]);
     totwr += numWins[i-1];
   }
-  if(data.length > 8){
+  if (data.length > 8) {
     maxStreak = int(data[8]);
     curStreak = int(data[7]);
-  } 
-  
+  }
+
   background(bgColor);
   size(750, 1050);
   frameRate(60);
@@ -101,7 +101,7 @@ void setup() {
   //initializes text box for when needed
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
-  
+
   //initializes retry button
   retryButton = new Button(buttonFile, width - 35, 35, 25);
 }
@@ -241,7 +241,7 @@ void checkInputKey(char c) {
       for (int i : numWins) {
         wr.println(i);
       }
-      maxStreak = max(curStreak,maxStreak);
+      maxStreak = max(curStreak, maxStreak);
       wr.println(curStreak);
       wr.println(maxStreak);
       wr.flush();
@@ -253,7 +253,7 @@ void checkInputKey(char c) {
     charNum = 0;
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
-      
+
       totAttempts++;
       curStreak = 0;
       displayDefeat();

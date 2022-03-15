@@ -49,8 +49,8 @@ public class Tile {
         fill(bgColor);
         stroke(88);
         rect(x, y + (frameCount - startFrame) * (side / animateTime), side, side - (2 * (frameCount - startFrame) * (side / animateTime))); //height goes from side to 0 in snimateTime - startFrame / 2 frames
-        textFont(createFont("Arial Bold", 30)); 
-    } else {  //2nd half of flip, color the tile accordingly
+        textFont(createFont("Arial Bold", 30));
+      } else {  //2nd half of flip, color the tile accordingly
         if (tState == TileState.GUESSED) {
           c = incorrectColor;
         } else if (tState == TileState.CORRECT_LETTER) {

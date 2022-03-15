@@ -1,12 +1,13 @@
 public class Graph {
-  
+
   void createGraph() {
     int x1 = 50;
     int x2 = width - 50;
     int y1 = height / 20 + 300;
     int y2 = 90 + (6 * (tileSideLength + padding));
     fill(255);
-    rect(x1,y1,x2-x1,y2-y1,10);
+    stroke(255);
+    rect(x1, y1, x2-x1, y2-y1, 10);
     textFont(createFont("Arial Bold", 20));
     int w = (x2 - x1) / 6;
     int h = (y2 - y1) / (maxWins() / 5 + 1);
@@ -22,11 +23,11 @@ public class Graph {
       rect(x1 + w * (i-1), y2, w, -h * numWins[i - 1] / 5.);
     }
   }
-  
+
   private int maxWins() {
     int max = 0;
     for (int i = 0; i < numWins.length; i++) {
-      max = max(max,numWins[i]);
+      max = max(max, numWins[i]);
     }
     return max;
   }
