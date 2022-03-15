@@ -7,6 +7,7 @@ class Button{ //radial button
   
   Button(String image, float x, float y, float r){
     button = loadImage(image);
+    button.resize(int(2 * r), int(2 * r));
     this.x = x;
     this.y = y;
     this.r = r;
