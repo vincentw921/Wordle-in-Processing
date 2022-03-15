@@ -5,7 +5,8 @@ class Button{ //radial button
   color baseColor;
   color selectedColor;
   
-  Button(float x, float y, float r){
+  Button(String image, float x, float y, float r){
+    button = loadImage(image);
     this.x = x;
     this.y = y;
     this.r = r;
@@ -13,8 +14,9 @@ class Button{ //radial button
     baseColor = color(200);
     selectedColor = color(160);
   }
+  
   void display(){
-    stroke(0);
+    stroke(120);
     strokeWeight(1);
     if(selected){
       fill(selectedColor);
@@ -22,10 +24,16 @@ class Button{ //radial button
       fill(baseColor);
     }
     circle(x, y, r*2);
+    image(button, x - r, y - r);
+  }
+  
+  void checkHeld(){
+    if(dist(mouseX, mouseY, x, y) <= r && mousePressed) selected = true;
   }
   void checkClicked(){
+    selected = false;
     if(dist(mouseX, mouseY, x, y) <= r){
-      
+      setup();
     }
   }
 }

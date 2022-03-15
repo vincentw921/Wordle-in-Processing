@@ -23,7 +23,7 @@ public enum GameState {
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
-String ans;
+String ans, buttonFile;
 color bgColor, correctColor, closeColor, incorrectColor, keyColor;
 boolean animating;
 String[] inputWords, answerWords;
@@ -51,6 +51,7 @@ void setup() {
   invalidCount = 0;
   animating = false;
   ans = answerWords[int(random(answerWords.length))];
+  buttonFile = "retry.png";
   bgColor = color(19);
   correctColor = color(83, 141, 78);
   closeColor = color(181, 159, 59);
@@ -88,8 +89,8 @@ void setup() {
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
   
-  //iniitializes retry button
-  retryButton = new Button(width - 50, height = 200, 50);
+  //initializes retry button
+  retryButton = new Button(buttonFile, width - 35, 35, 25);
 }
 
 void draw() {
@@ -101,8 +102,13 @@ void draw() {
     t.display();
   }
   for (Key k : keyboard) k.display();
+  retryButton.display();
   invalidText.display();
   endText.display();
+}
+
+void mousePressed() {
+  retryButton.checkHeld();
 }
 
 void mouseReleased() {
