@@ -17,9 +17,9 @@
  ******************************************************************************************************/
 
 public enum GameState {
-  ONGOING,
-  DEFEAT,
-  VICTORY;
+    ONGOING,
+    DEFEAT,
+    VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
@@ -36,11 +36,20 @@ TextBox invalidText;
 TextBox endText;
 Button retryButton;
 
-int numWins;
+int totAttempts;
+int[] numWins;
 PrintWriter wins;
+int maxStreak;
+int curStreak;
 
 void setup() {
-  numWins = int(loadStrings("save.txt")[0]);
+  numWins = new int[6];
+  totAttempts = int(loadStrings("save.txt")[0]) + 1;
+  for (int i = 1; i < 7; i++) {
+    numWins[i-1] = int(loadStrings("save.txt")[i]);
+  }
+  maxStreak = int(loadStrings("save.txt")[7]);
+  curStreak = int(loadStrings("save.txt")[8]);
   background(bgColor);
   size(750, 1050);
   frameRate(60);
@@ -134,13 +143,13 @@ void printTitle() {
 //Displays victory screen
 void displayVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  endText = new TextBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 3, width - 300, 100);
+  endText = new TextBox(guessNum == 1 ? "Nice, you did it in " + guessNum + " attempt" : "Nice, you did it in " + guessNum + " attempts", 150, height / 4, width - 300, 100);
   endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
 //Displays defeat screen
 void displayDefeat() {
-  endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 3, width - 300, 100);
+  endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 4, width - 300, 100);
   endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
@@ -214,9 +223,12 @@ void checkInputKey(char c) {
       guessNum++;
       gState = GameState.VICTORY;
       displayVictory();
-      numWins++;
+      numWins[guessNum-1]++;
       wins = createWriter("save.txt");
-      wins.println(numWins);
+      wins.println(totAttempts);
+      for (int i : numWins) {
+        wins.println(i);
+      }
       wins.flush();
       wins.close();
       return;
@@ -226,6 +238,13 @@ void checkInputKey(char c) {
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
       displayDefeat();
+      wins = createWriter("save.txt");
+      wins.println(totAttempts);
+      for (int i : numWins) {
+        wins.println(i);
+      }
+      wins.flush();
+      wins.close();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile
