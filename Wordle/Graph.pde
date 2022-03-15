@@ -7,7 +7,7 @@ public class Graph {
     int y2 = 90 + (6 * (tileSideLength + padding));
     fill(255);
     rect(x1,y1,x2-x1,y2-y1,10);
-    
+    textFont(createFont("Arial Bold", 20));
     int w = (x2 - x1) / 6;
     int h = (y2 - y1) / (maxWins() / 5 + 1);
     fill(255);
