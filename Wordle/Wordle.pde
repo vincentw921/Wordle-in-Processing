@@ -5,7 +5,6 @@
  * Credits:
  *   kelvin for doing some stuf
  *   vin for doing other stuff
- *   jeylnfish for the font source
  *
  * TO DO:
  *        Add animations for: (using animating boolean?)
@@ -36,19 +35,19 @@ TextBox invalidText;
 TextBox endText;
 Button retryButton;
 
-int totAttempts, totWins, maxStreak, curStreak;
+int totAttempts, totwr, maxStreak, curStreak;
 int[] numWins;
 PrintWriter wr;
 
 void setup() {
   numWins = new int[6];
-  totWins = 0;
+  totwr = 0;
   saveFile = "data/save.txt";
   String[] data = loadStrings(saveFile);
-  totAttempts = int(data[0]) + 1;
+  totAttempts = int(data[0]);
   for (int i = 1; i < 7; i++) {
     numWins[i-1] = int(data[i]);
-    totWins += numWins[i-1];
+    totwr += numWins[i-1];
   }
   if(data.length > 8){
     maxStreak = int(data[8]);
@@ -119,6 +118,10 @@ void draw() {
   retryButton.display();
   invalidText.display();
   endText.display();
+  if (gState != GameState.ONGOING) {
+    Graph g = new Graph();
+    g.createGraph();
+  }
 }
 
 void mousePressed() {
@@ -148,8 +151,8 @@ void printTitle() {
 //Displays victory screen
 void displayVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  String winCount = totWins == 1 ? "Nice, you've won " + totWins + " time!" : "Nice, you've won " + totWins + " times!";
-  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 4, width - 300, 300);
+  String winCount = totwr == 1 ? "Nice, you've won " + totwr + " time!" : "Nice, you've won " + totwr + " times!";
+  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 300);
   endText.displayStart(frameRate * 7, frameRate * 3);
 }
 
@@ -229,26 +232,28 @@ void checkInputKey(char c) {
       guessNum++;
       gState = GameState.VICTORY;
       numWins[guessNum-1]++;
-      totWins++;
+      totwr++;
       totAttempts++;
       curStreak++;
-      if(curStreak > maxStreak) maxStreak = curStreak;
       displayVictory();
       wr = createWriter(saveFile);
       wr.println(totAttempts);
       for (int i : numWins) {
         wr.println(i);
       }
+      maxStreak = max(curStreak,maxStreak);
       wr.println(curStreak);
       wr.println(maxStreak);
       wr.flush();
       wr.close();
+      displayVictory();
       return;
     }
     guessNum++;
     charNum = 0;
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
+      
       totAttempts++;
       curStreak = 0;
       displayDefeat();
@@ -257,10 +262,12 @@ void checkInputKey(char c) {
       for (int i : numWins) {
         wr.println(i);
       }
+      curStreak = 0;
       wr.println(curStreak);
       wr.println(maxStreak);
       wr.flush();
       wr.close();
+      displayDefeat();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile
