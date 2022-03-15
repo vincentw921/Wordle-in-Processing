@@ -10,8 +10,9 @@
  * TO DO:
  *        Add animations for: (using animating boolean?)
  *          - Invalid word
- *          - Revealing tiles, one at a time
+ *          - Revealing tiles, adding text to change its height
  *          - "bounce in" for when a character is added to a tile
+ *        Remake checkGuess() in order to be able to delay updates to tiles
  *        How are you supposed to format headers like this?
  ******************************************************************************************************/
 
@@ -96,7 +97,11 @@ void setup() {
 void draw() {
   background(bgColor);
   printTitle();
-  for (Tile[] tRow : tiles) for (Tile t : tRow) t.display();
+  boolean draw = true;
+  for (Tile[] tRow : tiles) for (Tile t : tRow) {
+    if (t.animate || !draw) draw = false;
+    t.display();
+  }
   for (Key k : keyboard) k.display();
   invalidText.display();
   endText.display();
@@ -195,7 +200,7 @@ void kbPressed() {
 void checkInputKey(char c) {
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING || animating) return;
-  
+
   //if enter key is pressed, make sure the input is valid before checking it.
   if (c == '\n') {
     if (charNum < 5) return;
@@ -285,8 +290,9 @@ boolean checkGuess() {
     }
   }
   //now starts the flip animation for all of them at the same time
-  for(Tile t : tiles[guessNum]){
-    t.animateStart(frameCount, frameRate * 0.5);
+  float flipTime = frameRate * 0.25;
+  for (int i = 0; i < tiles[guessNum].length; i++) {
+    tiles[guessNum][i].animateStart(int(frameCount + (i * flipTime)), flipTime);
   }
   //now adds those states to the onscreen keyboard
   for (int i = 0; i < guess.length(); i++) {

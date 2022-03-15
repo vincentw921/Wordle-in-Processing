@@ -1,10 +1,10 @@
 public enum TileState {
   NOT_GUESSED,
-    GUESSING,
-    SELECTED,
-    GUESSED,
-    CORRECT_LETTER,
-    CORRECT_PLACE;
+  GUESSING,
+  SELECTED,
+  GUESSED,
+  CORRECT_LETTER,
+  CORRECT_PLACE;
 }
 
 public class Tile {
@@ -30,24 +30,29 @@ public class Tile {
     strokeWeight(3);
     stroke(60);
     //displays boxes
-    if (animate) {
-      if (animateTime + startFrame <= frameCount) {
+    if (frameCount < startFrame && animate) { //before animation starts, just draw the GUESSSING state tile
+      fill(bgColor);
+      stroke(88);
+      square(x, y, side);
+      fill(255);
+      textFont(createFont("Arial Bold", side * 0.5));
+      textAlign(CENTER);
+      text(ch, x + side * 0.5, y + side * 0.7);
+    } else if (frameCount >= startFrame && frameCount < startFrame + animateTime) { //during animation, change tile size based on frameCount
+      if (animateTime + startFrame <= frameCount) { //if frameCount past animateTime, end the animation and reset the time values to placeholding values
         animate = false;
+        startFrame = 0;
+        animateTime = 0;
         return;
       }
-      float change = side / animateTime;
-      if (side - (2 * (frameCount - startFrame) * change) >= 0) {
+      if (side - (2 * (frameCount - startFrame) * (side / animateTime)) >= 0) { //Side is flipping from black to colored
         fill(bgColor);
         stroke(88);
-        rect(x, y + (frameCount - startFrame) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
-      } else {
-        if (tState == TileState.NOT_GUESSED) {
-          c = bgColor;
-        } else if (tState == TileState.GUESSED) {
+        rect(x, y + (frameCount - startFrame) * (side / animateTime), side, side - (2 * (frameCount - startFrame) * (side / animateTime))); //height goes from side to 0 in snimateTime - startFrame / 2 frames
+        textFont(createFont("Arial Bold", 30)); 
+    } else {  //2nd half of flip, color the tile accordingly
+        if (tState == TileState.GUESSED) {
           c = incorrectColor;
-        } else if (tState == TileState.GUESSING) {
-          stroke(88);
-          c = bgColor;
         } else if (tState == TileState.CORRECT_LETTER) {
           stroke(closeColor);
           c = closeColor;
@@ -56,33 +61,35 @@ public class Tile {
           c = correctColor;
         }
         fill(c);
-        rect(x, (y + 0.5 * side) + (frameCount - (startFrame + 0.5 * animateTime)) * change, side, side - (2 * (frameCount - startFrame) * change)); //height goes from side to 0 in snimateTime - startFrame / 2 frames
+        rect(x, (y + 0.5 * side) + (frameCount - (startFrame + 0.5 * animateTime)) * (side / animateTime), side, side - (2 * (frameCount - startFrame) * (side / animateTime))); //height goes from side to 0 in snimateTime - startFrame / 2 frames
       }
       return;
-    }
-    if (tState == TileState.NOT_GUESSED) {
-      c = bgColor;
-    } else if (tState == TileState.GUESSED) {
-      c = incorrectColor;
-    } else if (tState == TileState.GUESSING) {
-      stroke(88);
-      c = bgColor;
-    } else if (tState == TileState.CORRECT_LETTER) {
-      stroke(closeColor);
-      c = closeColor;
-    } else if (tState == TileState.CORRECT_PLACE) {
-      stroke(correctColor);
-      c = correctColor;
-    }
-    fill(c);
-    square(x, y, side);
+    } else { //If animation is over/not initiated, color accordingly
+      animate = false;
+      if (tState == TileState.NOT_GUESSED) {
+        c = bgColor;
+      } else if (tState == TileState.GUESSED) {
+        c = incorrectColor;
+      } else if (tState == TileState.GUESSING) {
+        stroke(88);
+        c = bgColor;
+      } else if (tState == TileState.CORRECT_LETTER) {
+        stroke(closeColor);
+        c = closeColor;
+      } else if (tState == TileState.CORRECT_PLACE) {
+        stroke(correctColor);
+        c = correctColor;
+      }
+      fill(c);
+      square(x, y, side);
 
-    //Then displays the characters
-    textFont(createFont("Arial Bold", side * 0.5));
-    textAlign(CENTER);
-    if (tState != TileState.NOT_GUESSED) {
-      fill(255);
-      text(ch, x + side * 0.5, y + side * 0.7);
+      //Then displays the characters
+      textFont(createFont("Arial Bold", side * 0.5));
+      textAlign(CENTER);
+      if (tState != TileState.NOT_GUESSED) {
+        fill(255);
+        text(ch, x + side * 0.5, y + side * 0.7);
+      }
     }
   }
   void animateStart(int startFrame, float animateTime) {
