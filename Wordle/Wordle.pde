@@ -23,7 +23,7 @@ public enum GameState {
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
-String ans, buttonFile, saveFile;
+String ans, retryButtonFile, graphButtonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor, buttonSelectedColor;
 boolean animating;
 String[] inputWords, answerWords;
@@ -34,7 +34,7 @@ PFont text, title, graphFont;
 Key[] keyboard;
 TextBox invalidText;
 TextBox endText;
-Button retryButton;
+Button retryButton, graphButton;
 Graph graph;
 
 int totalAttempts, winRate, maxStreak, curStreak;
@@ -66,7 +66,8 @@ void setup() {
   invalidCount = 0;
   animating = false;
   ans = answerWords[int(random(answerWords.length))];
-  buttonFile = "retry.png";
+  retryButtonFile = "retry.png";
+  graphButtonFile = "graph.png";
 
   //all the colors lmfao
   bgColor = color(19);
@@ -112,8 +113,9 @@ void setup() {
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
 
-  //initializes retry button
-  retryButton = new Button(buttonFile, ButtonType.RETRY, width - 35, 35, 25);
+  //initializes buttons
+  retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
+  graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
 }
 
 void draw() {
@@ -135,7 +137,7 @@ void draw() {
     }
     graph.createGraph();
   }
-
+  graphButton.display();
   retryButton.display();
   invalidText.display();
   endText.display();
