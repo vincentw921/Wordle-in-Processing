@@ -1,34 +1,65 @@
 public class Graph {
 
+  int x1, y1, x2, y2;
+  boolean show, mDown;
+
+  Graph(int x1, int x2, int y1, int y2) {
+    this.x1 = x1; //left side x
+    this.x2 = x2; //right side x
+    this.y1 = y1; //top side x
+    this.y2 = y2; //bottom side x
+    show = true;
+    mDown = false;
+  }
+
   void createGraph() {
-    int x1 = 50;
-    int x2 = width - 50;
-    int y1 = height / 20 + 300;
-    int y2 = 90 + (6 * (tileSideLength + padding));
-    fill(255);
-    stroke(255);
-    rect(x1, y1, x2-x1, y2-y1, 10);
-    textFont(createFont("Arial Bold", 20));
-    int w = (x2 - x1) / 6;
-    int h = (y2 - y1) / (maxWins() / 5 + 1);
-    fill(255);
-    for (int i = 0; i < (maxWins() / 5 + 1); i++) {
-      text(i * 5, x1 - 20, y2 - h * i);
+    if (mousePressed) {
+      mDown = true;
     }
+    if (!mousePressed && mDown) {
+      mDown = false;
+      show = !show;
+      return;
+    }
+    if (!show) return;
+    textAlign(CENTER);
+    fill(graphColor);
+    stroke(graphBorderColor);
+    rect(x1, y1, x2-x1, y2-y1, 10);
+
+    int gap = 18; //gap between bars
+    int yOffset = 50; //the amount the bars are shifted above y2
+    int w = (x2 - x1) / 6;
+    int baseBarHeight = 30;
+    int baseBarY = y2 - yOffset;
+    int maxBarY = y1 + 150 + baseBarHeight;
+    fill(255);
+    textFont(text);
+    text("STATISTICS", width / 2, y1 + 50);
     for (int i = 1; i <= 6; i++) {
-      fill(255);
-      text(i, x1 + w * i - w / 2, y2 + 20);
-      fill(0);
+      //the bar
       noStroke();
-      rect(x1 + w * (i-1), y2, w, -h * numWins[i - 1] / 5.);
+      if (guessNum == i) {
+        fill(correctColor);
+      } else {
+        fill(incorrectColor);
+      }
+      //baseBarHeight + (maxBarHeight * (numWins / maxWins))
+      rect(x1 + w * (i-1) + gap, y2-yOffset, w - 2 * gap, -baseBarHeight - (abs(maxBarY - baseBarY) * (numWins[i-1] / maxWins())));
+      fill(255);
+      textFont(graphFont);
+      //the bar's quantity
+      text(numWins[i-1], x1 + w * i - w / 2, y2-yOffset -baseBarHeight - (abs(maxBarY - baseBarY) * (numWins[i-1] / maxWins())) + (0.7 * baseBarHeight));
+      //the x-axis label
+      text(i, x1 + w * i - w / 2, y2 - yOffset + baseBarHeight);
     }
   }
 
-  private int maxWins() {
+  private float maxWins() {
     int max = 0;
     for (int i = 0; i < numWins.length; i++) {
       max = max(max, numWins[i]);
     }
-    return max;
+    return max(5, max);
   }
 }

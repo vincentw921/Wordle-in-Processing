@@ -1,28 +1,34 @@
+public enum ButtonType {
+  RETRY,
+    CLOSE_GRAPH;
+}
+
 class Button { //radial button
   PImage button;
   float x, y, r;
   boolean selected;
   color baseColor;
   color selectedColor;
+  ButtonType bType;
 
-  Button(String image, float x, float y, float r) {
+  Button(String image, ButtonType type, float x, float y, float r) {
     button = loadImage(image);
     button.resize(int(2 * r), int(2 * r));
     this.x = x;
     this.y = y;
     this.r = r;
     selected = false;
-    baseColor = color(200);
-    selectedColor = color(160);
+
+    bType = type;
   }
 
   void display() {
     stroke(120);
     strokeWeight(1);
     if (selected) {
-      fill(selectedColor);
+      fill(buttonSelectedColor);
     } else {
-      fill(baseColor);
+      fill(buttonBaseColor);
     }
     circle(x, y, r*2);
     image(button, x - r, y - r);
@@ -33,8 +39,10 @@ class Button { //radial button
   }
   void checkClicked() {
     selected = false;
-    if (dist(mouseX, mouseY, x, y) <= r) {
-      setup();
+    if (bType == ButtonType.RETRY) {
+      if (dist(mouseX, mouseY, x, y) <= r) {
+        setup();
+      }
     }
   }
 }

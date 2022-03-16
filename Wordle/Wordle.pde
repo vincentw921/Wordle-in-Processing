@@ -23,17 +23,18 @@ public enum GameState {
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans, buttonFile, saveFile;
-color bgColor, correctColor, closeColor, incorrectColor, keyColor;
+color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor, buttonSelectedColor;
 boolean animating;
 String[] inputWords, answerWords;
 String[] qwerty = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"};
 Tile[][] tiles;
 GameState gState;
-PFont text, title;
+PFont text, title, graphFont;
 Key[] keyboard;
 TextBox invalidText;
 TextBox endText;
 Button retryButton;
+Graph graph;
 
 int totAttempts, totwr, maxStreak, curStreak;
 int[] numWins;
@@ -65,14 +66,22 @@ void setup() {
   animating = false;
   ans = answerWords[int(random(answerWords.length))];
   buttonFile = "retry.png";
+
+  //all the colors lmfao
   bgColor = color(19);
   correctColor = color(83, 141, 78);
   closeColor = color(181, 159, 59);
   incorrectColor = color(60);
+  guessingColor = color(88);
   keyColor = color(129, 131, 132);
+  graphColor = color(25);
+  graphBorderColor = color(36);
+  buttonBaseColor = color(200);
+  buttonSelectedColor = color(160);
 
   text = createFont("Arial Bold", 30);
   title = createFont("karnakcondensed-normal-700.ttf", 60);
+  graphFont = createFont("Arial Bold", 20);
 
   //Creates tiles
   tiles = new Tile[6][5];
@@ -103,7 +112,7 @@ void setup() {
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
 
   //initializes retry button
-  retryButton = new Button(buttonFile, width - 35, 35, 25);
+  retryButton = new Button(buttonFile, ButtonType.RETRY, width - 35, 35, 25);
 }
 
 void draw() {
@@ -115,13 +124,20 @@ void draw() {
     t.display();
   }
   for (Key k : keyboard) k.display();
+
+  if (gState != GameState.ONGOING) {
+
+    if (graph.show) {
+      noStroke();
+      fill(0, 0, 0, 120);
+      rect(0, 0, width, height);
+    }
+    graph.createGraph();
+  }
+
   retryButton.display();
   invalidText.display();
   endText.display();
-  if (gState != GameState.ONGOING) {
-    Graph g = new Graph();
-    g.createGraph();
-  }
 }
 
 void mousePressed() {
@@ -149,17 +165,19 @@ void printTitle() {
 }
 
 //Displays victory screen
-void displayVictory() {
+void textVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
   String winCount = totwr == 1 ? "Nice, you've won " + totwr + " time!" : "Nice, you've won " + totwr + " times!";
-  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 300);
+  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 175);
   endText.displayStart(frameRate * 7, frameRate * 3);
+  graph = new Graph(50, width - 50, 250, height - 150);
 }
 
 //Displays defeat screen
-void displayDefeat() {
+void textDefeat() {
   endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 4, width - 300, 100);
   endText.displayStart(frameRate * 7, frameRate * 3);
+  graph = new Graph(50, width - 50, 250, height - 150);
 }
 
 void initKb() {
@@ -235,7 +253,7 @@ void checkInputKey(char c) {
       totwr++;
       totAttempts++;
       curStreak++;
-      displayVictory();
+      textVictory();
       wr = createWriter(saveFile);
       wr.println(totAttempts);
       for (int i : numWins) {
@@ -246,7 +264,7 @@ void checkInputKey(char c) {
       wr.println(maxStreak);
       wr.flush();
       wr.close();
-      displayVictory();
+      textVictory();
       return;
     }
     guessNum++;
@@ -256,7 +274,7 @@ void checkInputKey(char c) {
 
       totAttempts++;
       curStreak = 0;
-      displayDefeat();
+      textDefeat();
       wr = createWriter(saveFile);
       wr.println(totAttempts);
       for (int i : numWins) {
@@ -267,7 +285,7 @@ void checkInputKey(char c) {
       wr.println(maxStreak);
       wr.flush();
       wr.close();
-      displayDefeat();
+      textDefeat();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile

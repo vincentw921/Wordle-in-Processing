@@ -32,7 +32,7 @@ public class Tile {
     //displays boxes
     if (frameCount < startFrame && animate) { //before animation starts, just draw the GUESSSING state tile
       fill(bgColor);
-      stroke(88);
+      stroke(guessingColor);
       square(x, y, side);
       fill(255);
       textFont(createFont("Arial Bold", side * 0.5));
@@ -47,7 +47,7 @@ public class Tile {
       }
       if (side - (2 * (frameCount - startFrame) * (side / animateTime)) >= 0) { //Side is flipping from black to colored
         fill(bgColor);
-        stroke(88);
+        stroke(guessingColor);
         rect(x, y + (frameCount - startFrame) * (side / animateTime), side, side - (2 * (frameCount - startFrame) * (side / animateTime))); //height goes from side to 0 in snimateTime - startFrame / 2 frames
         textFont(createFont("Arial Bold", 30));
       } else {  //2nd half of flip, color the tile accordingly
@@ -71,7 +71,7 @@ public class Tile {
       } else if (tState == TileState.GUESSED) {
         c = incorrectColor;
       } else if (tState == TileState.GUESSING) {
-        stroke(88);
+        stroke(guessingColor);
         c = bgColor;
       } else if (tState == TileState.CORRECT_LETTER) {
         stroke(closeColor);
