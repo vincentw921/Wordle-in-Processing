@@ -13,6 +13,7 @@ public class Graph {
   }
 
   void createGraph() {
+    //enables 
     if (mousePressed) {
       mDown = true;
     }
@@ -32,7 +33,8 @@ public class Graph {
     int w = (x2 - x1) / 6;
     int baseBarHeight = 30;
     int baseBarY = y2 - yOffset;
-    int maxBarY = y1 + 150 + baseBarHeight;
+    int maxBarY = y1 + 200 + baseBarHeight;
+    
     fill(255);
     textFont(text);
     text("STATISTICS", width / 2, y1 + 50);
@@ -44,12 +46,12 @@ public class Graph {
       } else {
         fill(incorrectColor);
       }
-      //baseBarHeight + (maxBarHeight * (numWins / maxWins))
-      rect(x1 + w * (i-1) + gap, y2-yOffset, w - 2 * gap, -baseBarHeight - (abs(maxBarY - baseBarY) * (numWins[i-1] / maxWins())));
+      //baseBarHeight + (maxBarHeight * (winCounts / maxWins))
+      rect(x1 + w * (i-1) + gap, y2-yOffset, w - 2 * gap, -baseBarHeight - (abs(maxBarY - baseBarY) * (winCounts[i-1] / maxWins())));
       fill(255);
       textFont(graphFont);
       //the bar's quantity
-      text(numWins[i-1], x1 + w * i - w / 2, y2-yOffset -baseBarHeight - (abs(maxBarY - baseBarY) * (numWins[i-1] / maxWins())) + (0.7 * baseBarHeight));
+      text(winCounts[i-1], x1 + w * i - w / 2, y2-yOffset -baseBarHeight - (abs(maxBarY - baseBarY) * (winCounts[i-1] / maxWins())) + (0.7 * baseBarHeight));
       //the x-axis label
       text(i, x1 + w * i - w / 2, y2 - yOffset + baseBarHeight);
     }
@@ -57,8 +59,8 @@ public class Graph {
 
   private float maxWins() {
     int max = 0;
-    for (int i = 0; i < numWins.length; i++) {
-      max = max(max, numWins[i]);
+    for (int i = 0; i < winCounts.length; i++) {
+      max = max(max, winCounts[i]);
     }
     return max(5, max);
   }

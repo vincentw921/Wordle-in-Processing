@@ -1,12 +1,12 @@
 public enum ButtonType {
   RETRY,
-    CLOSE_GRAPH;
+  GRAPH;
 }
 
 class Button { //radial button
   PImage button;
   float x, y, r;
-  boolean selected;
+  boolean selected, active;
   color baseColor;
   color selectedColor;
   ButtonType bType;
@@ -18,7 +18,7 @@ class Button { //radial button
     this.y = y;
     this.r = r;
     selected = false;
-
+    active = false;
     bType = type;
   }
 
@@ -37,11 +37,20 @@ class Button { //radial button
   void checkHeld() {
     if (dist(mouseX, mouseY, x, y) <= r && mousePressed) selected = true;
   }
+  
   void checkClicked() {
     selected = false;
     if (bType == ButtonType.RETRY) {
       if (dist(mouseX, mouseY, x, y) <= r) {
         setup();
+      }
+    } else if(bType == ButtonType.GRAPH) {
+      if (dist(mouseX, mouseY, x,y) <= r) {
+        active = !active;
+        if (active) {
+          graph = new Graph(50, width - 50, 250, height - 150);
+          graph.createGraph();
+        }
       }
     }
   }

@@ -8,7 +8,7 @@
  *
  * TO DO:
  *        Add animations for: (using animating boolean?)
- *          - Invalid word
+ *          - Invalid word (shaking tiles)
  *          - Revealing tiles, adding text to change its height
  *          - "bounce in" for when a character is added to a tile
  *        Remake checkGuess() in order to be able to delay updates to tiles
@@ -17,6 +17,7 @@
 
 public enum GameState {
   ONGOING,
+  GRAPH,
   DEFEAT,
   VICTORY;
 }
@@ -36,19 +37,19 @@ TextBox endText;
 Button retryButton;
 Graph graph;
 
-int totAttempts, totwr, maxStreak, curStreak;
-int[] numWins;
-PrintWriter wr;
+int totalAttempts, winRate, maxStreak, curStreak;
+int[] winCounts;
+PrintWriter writer;
 
 void setup() {
-  numWins = new int[6];
-  totwr = 0;
+  winCounts = new int[6];
+  winRate = 0;
   saveFile = "data/save.txt";
   String[] data = loadStrings(saveFile);
-  totAttempts = int(data[0]);
+  totalAttempts = int(data[0]);
   for (int i = 1; i < 7; i++) {
-    numWins[i-1] = int(data[i]);
-    totwr += numWins[i-1];
+    winCounts[i-1] = int(data[i]);
+    winRate += winCounts[i-1];
   }
   if (data.length > 8) {
     maxStreak = int(data[8]);
@@ -167,16 +168,16 @@ void printTitle() {
 //Displays victory screen
 void textVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  String winCount = totwr == 1 ? "Nice, you've won " + totwr + " time!" : "Nice, you've won " + totwr + " times!";
+  String winCount = winRate == 1 ? "Nice, you've won " + winRate + " time!" : "Nice, you've won " + winRate + " times!";
   endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 175);
-  endText.displayStart(frameRate * 7, frameRate * 3);
+  endText.displayStart(frameRate * 4, frameRate * 1);
   graph = new Graph(50, width - 50, 250, height - 150);
 }
 
 //Displays defeat screen
 void textDefeat() {
   endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 4, width - 300, 100);
-  endText.displayStart(frameRate * 7, frameRate * 3);
+  endText.displayStart(frameRate * 4, frameRate * 1);
   graph = new Graph(50, width - 50, 250, height - 150);
 }
 
@@ -249,21 +250,21 @@ void checkInputKey(char c) {
     if (checkGuess()) {
       guessNum++;
       gState = GameState.VICTORY;
-      numWins[guessNum-1]++;
-      totwr++;
-      totAttempts++;
+      winCounts[guessNum-1]++;
+      winRate++;
+      totalAttempts++;
       curStreak++;
       textVictory();
-      wr = createWriter(saveFile);
-      wr.println(totAttempts);
-      for (int i : numWins) {
-        wr.println(i);
+      writer = createWriter(saveFile);
+      writer.println(totalAttempts);
+      for (int i : winCounts) {
+        writer.println(i);
       }
       maxStreak = max(curStreak, maxStreak);
-      wr.println(curStreak);
-      wr.println(maxStreak);
-      wr.flush();
-      wr.close();
+      writer.println(curStreak);
+      writer.println(maxStreak);
+      writer.flush();
+      writer.close();
       textVictory();
       return;
     }
@@ -272,19 +273,19 @@ void checkInputKey(char c) {
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
 
-      totAttempts++;
+      totalAttempts++;
       curStreak = 0;
       textDefeat();
-      wr = createWriter(saveFile);
-      wr.println(totAttempts);
-      for (int i : numWins) {
-        wr.println(i);
+      writer = createWriter(saveFile);
+      writer.println(totalAttempts);
+      for (int i : winCounts) {
+        writer.println(i);
       }
       curStreak = 0;
-      wr.println(curStreak);
-      wr.println(maxStreak);
-      wr.flush();
-      wr.close();
+      writer.println(curStreak);
+      writer.println(maxStreak);
+      writer.flush();
+      writer.close();
       textDefeat();
       return;
     }
@@ -333,7 +334,7 @@ boolean checkGuess() {
     return false;
   }
 
-  //now checks each character with answer, starting by marking each tile as wrong before updating the correct ones
+  //now checks each character with answer, starting by marking each tile as writerong before updating the correct ones
   for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].tState = TileState.GUESSED;
   //Marks characters in the correct location, and keeps a counter for keeping track of characters.
   int[] count = new int[26];
@@ -345,7 +346,7 @@ boolean checkGuess() {
     }
   }
 
-  //Now uses the counter to mark tiles that are in the wrong place
+  //Now uses the counter to mark tiles that are in the writerong place
   for (int i = 0; i < ans.length(); i++) {
     for (int j = 0; j < guess.length(); j++) {
       //tiles[guessNum][j].tState != State.CORRECT_PLACE
