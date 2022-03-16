@@ -17,14 +17,13 @@
 
 public enum GameState {
   ONGOING,
-  GRAPH,
   DEFEAT,
   VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans, retryButtonFile, graphButtonFile, saveFile;
-color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor, buttonSelectedColor;
+color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
 boolean animating;
 String[] inputWords, answerWords;
 String[] qwerty = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"};
@@ -37,19 +36,19 @@ TextBox endText;
 Button retryButton, graphButton;
 Graph graph;
 
-int totalAttempts, winRate, maxStreak, curStreak;
+int totalAttempts, winCount, maxStreak, curStreak;
 int[] winCounts;
 PrintWriter writer;
 
 void setup() {
   winCounts = new int[6];
-  winRate = 0;
+  winCount = 0;
   saveFile = "data/save.txt";
   String[] data = loadStrings(saveFile);
   totalAttempts = int(data[0]);
   for (int i = 1; i < 7; i++) {
     winCounts[i-1] = int(data[i]);
-    winRate += winCounts[i-1];
+    winCount += winCounts[i-1];
   }
   if (data.length > 8) {
     maxStreak = int(data[8]);
@@ -79,7 +78,6 @@ void setup() {
   graphColor = color(25);
   graphBorderColor = color(36);
   buttonBaseColor = color(200);
-  buttonSelectedColor = color(160);
 
   text = createFont("Arial Bold", 30);
   title = createFont("karnakcondensed-normal-700.ttf", 60);
@@ -116,6 +114,9 @@ void setup() {
   //initializes buttons
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
   graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
+  
+  //initializes graph
+  graph = new Graph(50, width - 50, 250, height - 75);
 }
 
 void draw() {
@@ -127,14 +128,11 @@ void draw() {
     t.display();
   }
   for (Key k : keyboard) k.display();
-
-  if (gState != GameState.ONGOING) {
-
-    if (graph.show) {
-      noStroke();
-      fill(0, 0, 0, 120);
-      rect(0, 0, width, height);
-    }
+  
+  if (graph.show && graphButton.active) {
+    noStroke();
+    fill(0, 0, 0, 120);
+    rect(0, 0, width, height);
     graph.createGraph();
   }
   graphButton.display();
@@ -145,10 +143,12 @@ void draw() {
 
 void mousePressed() {
   retryButton.checkHeld();
+  graphButton.checkHeld();
 }
 
 void mouseReleased() {
   retryButton.checkClicked();
+  graphButton.checkClicked();
   kbPressed();
 }
 
@@ -170,9 +170,11 @@ void printTitle() {
 //Displays victory screen
 void textVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  String winCount = winRate == 1 ? "Nice, you've won " + winRate + " time!" : "Nice, you've won " + winRate + " times!";
-  endText = new TextBox(winCount + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 175);
+  String str = winCount == 1 ? "Nice, you've won " + winCount + " time!" : "Nice, you've won " + winCount + " times!";
+  endText = new TextBox(str + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 175);
   endText.displayStart(frameRate * 4, frameRate * 1);
+  graph.show = true;
+  graphButton.active = true;
   graph = new Graph(50, width - 50, 250, height - 150);
 }
 
@@ -180,6 +182,8 @@ void textVictory() {
 void textDefeat() {
   endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 4, width - 300, 100);
   endText.displayStart(frameRate * 4, frameRate * 1);
+  graph.show = true;
+  graphButton.active = true;
   graph = new Graph(50, width - 50, 250, height - 150);
 }
 
@@ -253,7 +257,7 @@ void checkInputKey(char c) {
       guessNum++;
       gState = GameState.VICTORY;
       winCounts[guessNum-1]++;
-      winRate++;
+      winCount++;
       totalAttempts++;
       curStreak++;
       textVictory();
@@ -326,7 +330,6 @@ boolean checkGuess() {
   }
   if (!valid) {
     invalidCount++;
-    println("Not a valid input: " + guess);
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
       t.tState = TileState.NOT_GUESSED;

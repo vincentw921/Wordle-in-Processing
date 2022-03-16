@@ -13,33 +13,29 @@ public class Graph {
   }
 
   void createGraph() {
-    //enables 
-    if (mousePressed) {
-      mDown = true;
-    }
-    if (!mousePressed && mDown) {
-      mDown = false;
-      show = !show;
-      return;
-    }
+    //displays the graph (wierd name ik)
     if (!show) return;
     textAlign(CENTER);
     fill(graphColor);
     stroke(graphBorderColor);
-    rect(x1, y1, x2-x1, y2-y1, 10);
+    rect(x1, y1, x2-x1, y2-y1, 10); //draws the window where the graph will be
 
+    //used to draw the bars of the graph
     int gap = 18; //gap between bars
     int yOffset = 50; //the amount the bars are shifted above y2
-    int w = (x2 - x1) / 6;
-    int baseBarHeight = 30;
-    int baseBarY = y2 - yOffset;
-    int maxBarY = y1 + 200 + baseBarHeight;
+    int w = (x2 - x1) / 6; //width of the bars
+    int baseBarHeight = 30; //base bar height
+    int baseBarY = y2 - yOffset; //start of the bar (bottom's Y)
+    int maxBarY = y1 + 200 + baseBarHeight; //top's Y, the masximum possible y-value for the top of a bar
     
     fill(255);
     textFont(text);
     text("STATISTICS", width / 2, y1 + 50);
-    for (int i = 1; i <= 6; i++) {
-      //the bar
+    textFont(graphFont);
+    //prints the win rate, total attempts, current streak, and max streak
+    text("Winrate: " + round(100. * float(winCount) / float(totalAttempts)) + "%  Total Attempts: " + totalAttempts, width / 2, y1 + 80);
+    text("Current Streak: " + curStreak + "  Max Streak: " + maxStreak, width / 2, y1 + 110);
+    for (int i = 1; i <= 6; i++) {//draws the 6 bars, along with the text     
       noStroke();
       if (guessNum == i) {
         fill(correctColor);

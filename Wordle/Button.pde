@@ -7,8 +7,6 @@ class Button { //radial button
   PImage button;
   float x, y, r;
   boolean selected, active;
-  color baseColor;
-  color selectedColor;
   ButtonType bType;
 
   Button(String image, ButtonType type, float x, float y, float r) {
@@ -23,15 +21,23 @@ class Button { //radial button
   }
 
   void display() {
+    
     stroke(120);
     strokeWeight(1);
-    if (selected) {
-      fill(buttonSelectedColor);
-    } else {
-      fill(buttonBaseColor);
-    }
+    fill(buttonBaseColor);
     circle(x, y, r*2);
     image(button, x - r, y - r);
+    if (selected) {
+      noStroke();
+      fill(0, 0, 0, 120);
+      circle(x, y, r*2);
+    } 
+    if(active) {
+      noFill();
+      stroke(correctColor);
+      strokeWeight(3);
+      circle(x, y, r*2);
+    }
   }
 
   void checkHeld() {
@@ -47,10 +53,7 @@ class Button { //radial button
     } else if(bType == ButtonType.GRAPH) {
       if (dist(mouseX, mouseY, x,y) <= r) {
         active = !active;
-        if (active) {
-          graph = new Graph(50, width - 50, 250, height - 150);
-          graph.createGraph();
-        }
+        graph.show = active;
       }
     }
   }
