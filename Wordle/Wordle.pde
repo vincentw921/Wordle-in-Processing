@@ -22,7 +22,7 @@ public enum GameState {
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
-String ans, retryButtonFile, graphButtonFile, saveFile;
+String ans, retryButtonFile, graphButtonFile, hardButtonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
 boolean animating;
 String[] inputWords, answerWords;
@@ -32,13 +32,16 @@ GameState gState;
 PFont text, title, graphFont;
 Key[] keyboard;
 TextBox invalidText;
+TextBox hardInvalidText;
 TextBox endText;
-Button retryButton, graphButton;
+Button retryButton, graphButton, hardButton;
 Graph graph;
 
 int totalAttempts, winCount, maxStreak, curStreak;
 int[] winCounts;
 PrintWriter writer;
+
+boolean hardMode;
 
 void setup() {
   winCounts = new int[6];
@@ -67,6 +70,7 @@ void setup() {
   ans = answerWords[int(random(answerWords.length))];
   retryButtonFile = "retry.png";
   graphButtonFile = "graph.png";
+  hardButtonFile = "hard.png";
 
   //all the colors lmfao
   bgColor = color(19);
@@ -109,11 +113,13 @@ void setup() {
 
   //initializes text box for when needed
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
+  hardInvalidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
 
   //initializes buttons
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
   graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
+  hardButton = new Button(hardButtonFile, ButtonType.HARD, width - 145, 35, 25);
   
   //initializes graph
   graph = new Graph(50, width - 50, 250, height - 75);
@@ -137,18 +143,22 @@ void draw() {
   }
   graphButton.display();
   retryButton.display();
+  hardButton.display();
   invalidText.display();
+  hardInvalidText.display();
   endText.display();
 }
 
 void mousePressed() {
   retryButton.checkHeld();
   graphButton.checkHeld();
+  hardButton.checkHeld();
 }
 
 void mouseReleased() {
   retryButton.checkClicked();
   graphButton.checkClicked();
+  hardButton.checkClicked();
   kbPressed();
 }
 
@@ -322,19 +332,48 @@ boolean checkGuess() {
 
   //checks if guess was valid, based on input-words.txt
   boolean valid = false;
+  
+  boolean hardInvalid = false;
   for (String s : inputWords) {
     if (s.equals(guess)) {
       valid = true;
       break;
     }
   }
+  if (hardMode && guessNum > 0) { 
+    for (int i = 0; i < tiles[0].length; i++) {
+      if (tiles[guessNum-1][i].tState == TileState.CORRECT_PLACE && tiles[guessNum-1][i].ch != guess.charAt(i)) {
+        valid = false;
+        hardInvalid = true;
+        break;
+      }
+      if (tiles[guessNum-1][i].tState == TileState.CORRECT_LETTER) {
+        boolean hasLetter = false;
+        for (int c = 0; c < guess.length(); c++) {
+          if (tiles[guessNum-1][i].ch == guess.charAt(c)) {
+            hasLetter = true;
+          }
+        }
+        if (!hasLetter) {
+          hardInvalid = true;
+          valid = false;
+          break;
+        }
+      }
+    }
+  }
+  
   if (!valid) {
     invalidCount++;
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
       t.tState = TileState.NOT_GUESSED;
     }
-    invalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
+    if (!hardInvalid) {
+      invalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
+    } else {
+      hardInvalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
+    }
     guessNum--;
     return false;
   }
