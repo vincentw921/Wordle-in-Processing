@@ -2,7 +2,6 @@
 A Wordle Game created in Processing 4
 
 ### TODO:
-* Add Hard Mode for wordle
 * Add a toggle button for daily work and practice mode
 
 ## CREATED BY: Vincent Wang and Kelvin Zhao
