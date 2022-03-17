@@ -8,7 +8,7 @@ A Wordle Game created in Processing 4
 
 ### To run: 
 
-    - Download Processing 4.0 from [this link] (https://processing.org/download)
+    - Download Processing 4.0 from https://processing.org/download
     
     - Download https://github.com/vincentw921/Wordle-in-Processing as a .zip file, and extract it.
     
