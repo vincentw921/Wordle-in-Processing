@@ -17,12 +17,12 @@
 
 public enum GameState {
   ONGOING,
-  DEFEAT,
-  VICTORY;
+    DEFEAT,
+    VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
-String ans, retryButtonFile, graphButtonFile, hardButtonFile, saveFile;
+String ans, retryButtonFile, graphButtonFile, hardButtonFile, practiceButtonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
 boolean animating;
 String[] inputWords, answerWords;
@@ -34,7 +34,7 @@ Key[] keyboard;
 TextBox invalidText;
 TextBox hardInvalidText;
 TextBox endText;
-Button retryButton, graphButton, hardButton;
+Button retryButton, graphButton, hardButton, practiceButton;
 Graph graph;
 
 int totalAttempts, winCount, maxStreak, curStreak;
@@ -42,6 +42,11 @@ int[] winCounts;
 PrintWriter writer;
 
 boolean hardMode;
+boolean wordleDone;
+boolean practiceMode;
+
+TextBox dailyWordleDone;
+TextBox time;
 
 void setup() {
   winCounts = new int[6];
@@ -53,9 +58,12 @@ void setup() {
     winCounts[i-1] = int(data[i]);
     winCount += winCounts[i-1];
   }
-  if (data.length > 8) {
-    maxStreak = int(data[8]);
-    curStreak = int(data[7]);
+  maxStreak = int(data[8]);
+  curStreak = int(data[7]);
+  String date = data[9];
+  String curdate = "" + year() + month() + day();
+  if (date.equals(curdate)) {
+    wordleDone = true;
   }
 
   background(bgColor);
@@ -71,6 +79,7 @@ void setup() {
   retryButtonFile = "retry.png";
   graphButtonFile = "graph.png";
   hardButtonFile = "hard.png";
+  practiceButtonFile = "target.png";
 
   //all the colors lmfao
   bgColor = color(19);
@@ -120,12 +129,22 @@ void setup() {
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
   graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
   hardButton = new Button(hardButtonFile, ButtonType.HARD, width - 145, 35, 25);
-  
+  practiceButton = new Button(practiceButtonFile, ButtonType.PRACTICE, width - 145 - (145 - 90), 35, 25);
+
   //initializes graph
   graph = new Graph(50, width - 50, 250, height - 75);
 }
 
 void draw() {
+  if (wordleDone && !practiceMode) {
+    int seconds = (24 * 60 * 60) - (second() + 60 * minute() + 3600 * hour());
+    int hours = seconds / 3600;
+    seconds %= 3600;
+    int minutes = seconds / 60;
+    seconds %= 60;
+    String timer = "Come back in: " + hours + ":" + minutes + ":" + seconds;
+    String dailyWordleDone = "Daily Wordle already finished";
+  }
   background(bgColor);
   printTitle();
   boolean draw = true;
@@ -134,7 +153,7 @@ void draw() {
     t.display();
   }
   for (Key k : keyboard) k.display();
-  
+
   if (graph.show && graphButton.active) {
     noStroke();
     fill(0, 0, 0, 120);
@@ -144,6 +163,7 @@ void draw() {
   graphButton.display();
   retryButton.display();
   hardButton.display();
+  practiceButton.display();
   invalidText.display();
   hardInvalidText.display();
   endText.display();
@@ -153,16 +173,19 @@ void mousePressed() {
   retryButton.checkHeld();
   graphButton.checkHeld();
   hardButton.checkHeld();
+  practiceButton.checkHeld();
 }
 
 void mouseReleased() {
   retryButton.checkClicked();
+  practiceButton.checkClicked();
   graphButton.checkClicked();
   hardButton.checkClicked();
   kbPressed();
 }
 
 void keyPressed() {
+  if (wordleDone && !practiceMode) return;
   checkInputKey(key);
 }
 
@@ -271,6 +294,7 @@ void checkInputKey(char c) {
       totalAttempts++;
       curStreak++;
       textVictory();
+      if (practiceMode) return;
       writer = createWriter(saveFile);
       writer.println(totalAttempts);
       for (int i : winCounts) {
@@ -279,6 +303,7 @@ void checkInputKey(char c) {
       maxStreak = max(curStreak, maxStreak);
       writer.println(curStreak);
       writer.println(maxStreak);
+      writer.println("" + year() + month() + day());
       writer.flush();
       writer.close();
       textVictory();
@@ -292,6 +317,7 @@ void checkInputKey(char c) {
       totalAttempts++;
       curStreak = 0;
       textDefeat();
+      if (practiceMode) return;
       writer = createWriter(saveFile);
       writer.println(totalAttempts);
       for (int i : winCounts) {
@@ -300,9 +326,9 @@ void checkInputKey(char c) {
       curStreak = 0;
       writer.println(curStreak);
       writer.println(maxStreak);
+      writer.println("" + year() + month() + day());
       writer.flush();
       writer.close();
-      textDefeat();
       return;
     }
   } else if (c == '\b') {  //removes the current character and backs up a tile
@@ -332,7 +358,7 @@ boolean checkGuess() {
 
   //checks if guess was valid, based on input-words.txt
   boolean valid = false;
-  
+
   boolean hardInvalid = false;
   for (String s : inputWords) {
     if (s.equals(guess)) {
@@ -340,7 +366,7 @@ boolean checkGuess() {
       break;
     }
   }
-  if (hardMode && guessNum > 0) { 
+  if (hardMode && guessNum > 0) {
     for (int i = 0; i < tiles[0].length; i++) {
       if (tiles[guessNum-1][i].tState == TileState.CORRECT_PLACE && tiles[guessNum-1][i].ch != guess.charAt(i)) {
         valid = false;
@@ -362,7 +388,7 @@ boolean checkGuess() {
       }
     }
   }
-  
+
   if (!valid) {
     invalidCount++;
     for (Tile t : tiles[guessNum]) {

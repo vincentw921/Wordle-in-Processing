@@ -1,6 +1,7 @@
 public enum ButtonType {
   RETRY,
   HARD,
+  PRACTICE,
   GRAPH;
 }
 
@@ -61,6 +62,11 @@ class Button { //radial button
       if (dist(mouseX,mouseY,x,y) <= r) {
         active = !active;
         hardMode = active;
+      }
+    } else if (bType == ButtonType.PRACTICE) {
+      if (dist(mouseX,mouseY,x,y) <= r) {
+        active = !active;
+        practiceMode = active;
       }
     }
   }
