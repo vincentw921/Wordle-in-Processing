@@ -8,7 +8,7 @@ public class Graph {
     this.x2 = x2; //right side x
     this.y1 = y1; //top side x
     this.y2 = y2; //bottom side x
-    show = true;
+    show = false;
     mDown = false;
   }
 

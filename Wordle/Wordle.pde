@@ -17,8 +17,8 @@
 
 public enum GameState {
   ONGOING,
-    DEFEAT,
-    VICTORY;
+  DEFEAT,
+  VICTORY;
 }
 
 int tileSideLength, guessNum, charNum, invalidCount, padding;
@@ -172,7 +172,7 @@ void draw() {
   practiceText.display();
   if(practiceText.show) return;
   endText.display();
-  if(endText.show) return;
+  if(endText.show || graph.show) return;
   dailyWordleDone.display();
 }
 
@@ -209,21 +209,20 @@ void printTitle() {
 //Displays victory screen
 void textVictory() {
   //Using ? as intended, to make code impossibly confusing to read. Here it's only being used to be grammatically accurate
-  String str = winCount == 1 ? "Nice, you've won " + winCount + " time!" : "Nice, you've won " + winCount + " times!";
-  endText = new TextBox(str + "\n Current win streak: " + curStreak + "\n Max win streak: " + maxStreak, 150, height / 20, width - 300, 175);
+  endText = new TextBox(winCount == 1 ? "Nice, you've won " + winCount + " time!" : "Nice, you've won " + winCount + " times!", 150, height / 20, width - 300, 100);
   endText.displayStart(frameRate * 4, frameRate * 1);
+  graph = new Graph(50, width - 50, 250, height - 150);
   graph.show = true;
   graphButton.active = true;
-  graph = new Graph(50, width - 50, 250, height - 150);
 }
 
 //Displays defeat screen
 void textDefeat() {
-  endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 4, width - 300, 100);
+  endText = new TextBox("Correct answer: \"" + Character.toUpperCase(ans.charAt(0)) + ans.substring(1, ans.length()) + "\"", 150, height / 10, width - 300, 100);
   endText.displayStart(frameRate * 4, frameRate * 1);
+  graph = new Graph(50, width - 50, 250, height - 150);
   graph.show = true;
   graphButton.active = true;
-  graph = new Graph(50, width - 50, 250, height - 150);
 }
 
 void initKb() {
@@ -288,7 +287,6 @@ void checkInputKey(char c) {
   if (wordleDone && !practiceMode) return;
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING || animating) return;
-
   //if enter key is pressed, make sure the input is valid before checking it.
   if (c == '\n') {
     if (charNum < 5) return;
@@ -343,9 +341,9 @@ void checkInputKey(char c) {
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].tState = TileState.NOT_GUESSED;
     charNum--;
-  } else if (c == ' ') { //shows the answer
+  } /*else if (c == ' ') { //shows the answer
     println("Answer: " + ans);
-  } else {
+  }*/ else {
     animating = true;
     //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((Character.toLowerCase(c) >= 97 && Character.toLowerCase(c) <= 122) && charNum < 5) {

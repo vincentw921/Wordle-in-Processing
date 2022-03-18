@@ -56,6 +56,7 @@ class Button { //radial button
       }
     } else if(bType == ButtonType.GRAPH) {
       if (dist(mouseX, mouseY, x,y) <= r) {
+        
         active = !active;
         graph.show = active;
       }
