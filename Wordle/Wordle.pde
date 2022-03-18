@@ -24,28 +24,20 @@ public enum GameState {
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans, retryButtonFile, graphButtonFile, hardButtonFile, practiceButtonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
-boolean animating, hardMode;
+boolean animating, hardMode, wordleDone, practiceMode;
 String[] inputWords, answerWords;
 String[] qwerty = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"};
+PFont text, title, graphFont;
 Tile[][] tiles;
 GameState gState;
-PFont text, title, graphFont;
 Key[] keyboard;
-TextBox invalidText;
-TextBox hardInvalidText;
-TextBox endText;
+TextBox invalidText, hardInvalidText, endText, modeText, dailyWordleDone, practiceText;
 Button retryButton, graphButton, hardButton, practiceButton;
-TextBox modeText;
 Graph graph;
 
 int totalAttempts, winCount, maxStreak, curStreak;
 int[] winCounts;
 PrintWriter writer;
-
-boolean wordleDone;
-boolean practiceMode;
-
-TextBox dailyWordleDone;
 
 void setup() {
   winCounts = new int[6];
@@ -125,6 +117,7 @@ void setup() {
   hardInvalidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
   modeText = new TextBox("Hard mode?", 150, height / 5, width - 300, 100);
+  practiceText = new TextBox("Practice mode?", 150, height / 5, width - 300, 100);
   
   //initializes buttons
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
@@ -165,7 +158,6 @@ void draw() {
     dailyWordleDone.msg = d + "\n" + timer;
     dailyWordleDone.displayStart(5, 100);
     dailyWordleDone.font = createFont("Arial Bold", 40);
-    dailyWordleDone.display();
   }
   graphButton.display();
   retryButton.display();
@@ -177,7 +169,11 @@ void draw() {
   if(hardInvalidText.show) return;
   modeText.display();
   if(modeText.show) return;
+  practiceText.display();
+  if(practiceText.show) return;
   endText.display();
+  if(endText.show) return;
+  dailyWordleDone.display();
 }
 
 void mousePressed() {

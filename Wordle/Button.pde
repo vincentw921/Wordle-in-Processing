@@ -71,6 +71,8 @@ class Button { //radial button
       if (dist(mouseX,mouseY,x,y) <= r) {
         active = !active;
         practiceMode = active;
+        practiceText = new TextBox(practiceMode ? "Practice mode activated" : "Practice mode disabled", 150, height / 5, width - 300, 100);
+        practiceText.displayStart(frameRate * 0.7, frameRate * 0.25);
       }
     }
   }
