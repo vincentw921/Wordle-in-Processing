@@ -118,7 +118,7 @@ void setup() {
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
   modeText = new TextBox("Hard mode?", 150, height / 5, width - 300, 100);
   practiceText = new TextBox("Practice mode?", 150, height / 5, width - 300, 100);
-  
+
   //initializes buttons
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
   graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
@@ -164,15 +164,15 @@ void draw() {
   hardButton.display();
   practiceButton.display();
   invalidText.display();
-  if(invalidText.show) return;
+  if (invalidText.show) return;
   hardInvalidText.display();
-  if(hardInvalidText.show) return;
+  if (hardInvalidText.show) return;
   modeText.display();
-  if(modeText.show) return;
+  if (modeText.show) return;
   practiceText.display();
-  if(practiceText.show) return;
+  if (practiceText.show) return;
   endText.display();
-  if(endText.show || graph.show) return;
+  if (endText.show || graph.show) return;
   dailyWordleDone.display();
 }
 
@@ -192,6 +192,7 @@ void mouseReleased() {
 }
 
 void keyPressed() {
+  //if(key == ' ') println(ans);
   checkInputKey(key);
 }
 
@@ -294,12 +295,12 @@ void checkInputKey(char c) {
     if (checkGuess()) {
       guessNum++;
       gState = GameState.VICTORY;
+      textVictory();
+      if (practiceMode) return;
       winCounts[guessNum-1]++;
       winCount++;
       totalAttempts++;
       curStreak++;
-      textVictory();
-      if (practiceMode) return;
       writer = createWriter(saveFile);
       writer.println(totalAttempts);
       for (int i : winCounts) {
@@ -319,10 +320,10 @@ void checkInputKey(char c) {
     if (guessNum == 6) {
       gState = GameState.DEFEAT;
 
-      totalAttempts++;
-      curStreak = 0;
       textDefeat();
       if (practiceMode) return;
+      totalAttempts++;
+      curStreak = 0;
       writer = createWriter(saveFile);
       writer.println(totalAttempts);
       for (int i : winCounts) {
@@ -342,8 +343,9 @@ void checkInputKey(char c) {
     tiles[guessNum][charNum-1].tState = TileState.NOT_GUESSED;
     charNum--;
   } /*else if (c == ' ') { //shows the answer
-    println("Answer: " + ans);
-  }*/ else {
+   println("Answer: " + ans);
+   }*/
+  else {
     animating = true;
     //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((Character.toLowerCase(c) >= 97 && Character.toLowerCase(c) <= 122) && charNum < 5) {

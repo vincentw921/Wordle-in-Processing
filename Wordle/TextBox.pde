@@ -6,7 +6,7 @@ class TextBox {
   boolean show;
   color c, textC;
   PFont font;
-  
+
   boolean isTimer;
   String timerStr;
 

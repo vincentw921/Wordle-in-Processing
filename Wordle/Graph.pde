@@ -27,7 +27,7 @@ public class Graph {
     int baseBarHeight = 30; //base bar height
     int baseBarY = y2 - yOffset; //start of the bar (bottom's Y)
     int maxBarY = y1 + 200 + baseBarHeight; //top's Y, the masximum possible y-value for the top of a bar
-    
+
     fill(255);
     textFont(text);
     text("STATISTICS", width / 2, y1 + 50);
@@ -35,7 +35,7 @@ public class Graph {
     //prints the win rate, total attempts, current streak, and max streak
     text("Winrate: " + round(100. * float(winCount) / float(totalAttempts)) + "%  Total Attempts: " + totalAttempts, width / 2, y1 + 80);
     text("Current Streak: " + curStreak + "  Max Streak: " + maxStreak, width / 2, y1 + 110);
-    for (int i = 1; i <= 6; i++) {//draws the 6 bars, along with the text     
+    for (int i = 1; i <= 6; i++) {//draws the 6 bars, along with the text
       noStroke();
       if (guessNum == i) {
         fill(correctColor);

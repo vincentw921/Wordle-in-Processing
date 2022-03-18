@@ -23,7 +23,7 @@ class Button { //radial button
   }
 
   void display() {
-    
+
     stroke(120);
     strokeWeight(1);
     fill(buttonBaseColor);
@@ -33,12 +33,12 @@ class Button { //radial button
       noStroke();
       fill(0, 0, 0, 120);
       circle(x, y, r*2);
-    } 
-    if(active) {
+    }
+    if (active) {
       noFill();
-      if(bType == ButtonType.GRAPH) stroke(correctColor);
-      if(bType == ButtonType.HARD) stroke(closeColor);
-      if (bType == ButtonType.PRACTICE) stroke(165,30,40);
+      if (bType == ButtonType.GRAPH) stroke(correctColor);
+      if (bType == ButtonType.HARD) stroke(closeColor);
+      if (bType == ButtonType.PRACTICE) stroke(165, 30, 40);
       strokeWeight(5);
       circle(x, y, r*2);
     }
@@ -47,21 +47,21 @@ class Button { //radial button
   void checkHeld() {
     if (dist(mouseX, mouseY, x, y) <= r && mousePressed) selected = true;
   }
-  
+
   void checkClicked() {
     selected = false;
     if (bType == ButtonType.RETRY) {
       if (dist(mouseX, mouseY, x, y) <= r) {
         setup();
       }
-    } else if(bType == ButtonType.GRAPH) {
-      if (dist(mouseX, mouseY, x,y) <= r) {
-        
+    } else if (bType == ButtonType.GRAPH) {
+      if (dist(mouseX, mouseY, x, y) <= r) {
+
         active = !active;
         graph.show = active;
       }
     } else if (bType == ButtonType.HARD) {
-      if (dist(mouseX,mouseY,x,y) <= r) {
+      if (dist(mouseX, mouseY, x, y) <= r) {
         active = !active;
         hardMode = active;
         String mode = hardMode ? "Hard mode activated" : "Hard mode disabled";
@@ -69,7 +69,7 @@ class Button { //radial button
         modeText.displayStart(frameRate * 0.7, frameRate * 0.25);
       }
     } else if (bType == ButtonType.PRACTICE) {
-      if (dist(mouseX,mouseY,x,y) <= r) {
+      if (dist(mouseX, mouseY, x, y) <= r) {
         active = !active;
         practiceMode = active;
         practiceText = new TextBox(practiceMode ? "Practice mode activated" : "Practice mode disabled", 150, height / 5, width - 300, 100);
