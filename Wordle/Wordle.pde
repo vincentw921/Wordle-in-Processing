@@ -46,7 +46,6 @@ boolean wordleDone;
 boolean practiceMode;
 
 TextBox dailyWordleDone;
-TextBox time;
 
 void setup() {
   winCounts = new int[6];
@@ -121,6 +120,7 @@ void setup() {
   gState = GameState.ONGOING;
 
   //initializes text box for when needed
+  dailyWordleDone = new TextBox("", 50, height / 5, width - 100, 500);
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   hardInvalidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
@@ -137,15 +137,6 @@ void setup() {
 }
 
 void draw() {
-  if (wordleDone && !practiceMode) {
-    int seconds = (24 * 60 * 60) - (second() + 60 * minute() + 3600 * hour());
-    int hours = seconds / 3600;
-    seconds %= 3600;
-    int minutes = seconds / 60;
-    seconds %= 60;
-    String timer = "Come back in: " + hours + ":" + minutes + ":" + seconds;
-    String dailyWordleDone = "Daily Wordle already finished";
-  }
   background(bgColor);
   printTitle();
   boolean draw = true;
@@ -160,6 +151,21 @@ void draw() {
     fill(0, 0, 0, 120);
     rect(0, 0, width, height);
     graph.createGraph();
+  }
+  if (wordleDone && !practiceMode) {
+    int seconds = (24 * 60 * 60) - (second() + 60 * minute() + 3600 * hour());
+    int hours = seconds / 3600;
+    seconds %= 3600;
+    int minutes = seconds / 60;
+    seconds %= 60;
+    String timer = "Come back in:";
+    String d = "Daily Wordle already finished";
+    dailyWordleDone.timerStr =  "\n" + (hours / 10 == 0 ? "0" + hours : hours) + ":" + (minutes / 10 == 0 ? "0" + minutes : minutes) + ":" + (seconds / 10 == 0 ? "0" + seconds : seconds);
+    dailyWordleDone.isTimer = true;
+    dailyWordleDone.msg = d + "\n" + timer;
+    dailyWordleDone.displayStart(5, 100);
+    dailyWordleDone.font = createFont("Arial Bold", 40);
+    dailyWordleDone.display();
   }
   graphButton.display();
   retryButton.display();

@@ -38,6 +38,7 @@ class Button { //radial button
       noFill();
       if(bType == ButtonType.GRAPH) stroke(correctColor);
       if(bType == ButtonType.HARD) stroke(closeColor);
+      if (bType == ButtonType.PRACTICE) stroke(165,30,40);
       strokeWeight(5);
       circle(x, y, r*2);
     }

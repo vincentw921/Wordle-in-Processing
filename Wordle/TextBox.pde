@@ -5,6 +5,10 @@ class TextBox {
   String msg;
   boolean show;
   color c, textC;
+  PFont font;
+  
+  boolean isTimer;
+  String timerStr;
 
   public TextBox(String msg, int x, int y, int w, int h) {
     startFrame = 0;
@@ -13,7 +17,10 @@ class TextBox {
     this.y = y;
     this.w  = w;
     this.h = h;
+    isTimer = false;
     show = false;
+    font = text;
+    timerStr = "";
   }
 
   //frameTime is number of frames to show, fadeTime is number of frames to fade away for
@@ -41,10 +48,14 @@ class TextBox {
     fill(currC);
     noStroke();
     rect(x, y, w, h, 10);
-    textFont(text);
+    textFont(font);
     fill(currTextC);
     textAlign(CENTER);
     text(msg, (2 * x + w) / 2, y + 50);
+    if (isTimer) {
+      textFont(createFont("Arial Bold", 140));
+      text(timerStr, (2 * x + w) / 2, y + 110);
+    }
   }
   public TextBox() {
     this("No message", 300, height / 3, width - 300, 100);
