@@ -196,7 +196,6 @@ void mouseReleased() {
 }
 
 void keyPressed() {
-  if (wordleDone && !practiceMode) return;
   checkInputKey(key);
 }
 
@@ -290,6 +289,7 @@ void kbPressed() {
 }
 
 void checkInputKey(char c) {
+  if (wordleDone && !practiceMode) return;
   //if the game isn't running, dont check for keyboard inputs
   if (gState != GameState.ONGOING || animating) return;
 
