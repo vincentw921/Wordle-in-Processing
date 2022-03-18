@@ -145,7 +145,11 @@ void draw() {
   retryButton.display();
   hardButton.display();
   invalidText.display();
+  if(invalidText.show) return;
   hardInvalidText.display();
+  if(hardInvalidText.show) return;
+  modeText.display();
+  if(modeText.show) return;
   endText.display();
 }
 
