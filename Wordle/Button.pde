@@ -62,6 +62,9 @@ class Button { //radial button
       if (dist(mouseX,mouseY,x,y) <= r) {
         active = !active;
         hardMode = active;
+        String mode = hardMode ? "Hard mode activated" : "Hard mode disabled";
+        modeText = new TextBox(mode, 150, height / 5, width - 300, 100);
+        modeText.displayStart(frameRate * 0.7, frameRate * 0.25);
       }
     } else if (bType == ButtonType.PRACTICE) {
       if (dist(mouseX,mouseY,x,y) <= r) {

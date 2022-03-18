@@ -24,7 +24,7 @@ public enum GameState {
 int tileSideLength, guessNum, charNum, invalidCount, padding;
 String ans, retryButtonFile, graphButtonFile, hardButtonFile, practiceButtonFile, saveFile;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
-boolean animating;
+boolean animating, hardMode;
 String[] inputWords, answerWords;
 String[] qwerty = {"Q", "W", "E", "R", "T", "Y", "U", "I", "O", "P", "A", "S", "D", "F", "G", "H", "J", "K", "L", "ENTER", "Z", "X", "C", "V", "B", "N", "M", "BACKSPACE"};
 Tile[][] tiles;
@@ -35,13 +35,13 @@ TextBox invalidText;
 TextBox hardInvalidText;
 TextBox endText;
 Button retryButton, graphButton, hardButton, practiceButton;
+TextBox modeText;
 Graph graph;
 
 int totalAttempts, winCount, maxStreak, curStreak;
 int[] winCounts;
 PrintWriter writer;
 
-boolean hardMode;
 boolean wordleDone;
 boolean practiceMode;
 
@@ -124,7 +124,8 @@ void setup() {
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
   hardInvalidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
-
+  modeText = new TextBox("Hard mode?", 150, height / 5, width - 300, 100);
+  
   //initializes buttons
   retryButton = new Button(retryButtonFile, ButtonType.RETRY, width - 35, 35, 25);
   graphButton = new Button(graphButtonFile, ButtonType.GRAPH, width - 90, 35, 25);
@@ -165,7 +166,11 @@ void draw() {
   hardButton.display();
   practiceButton.display();
   invalidText.display();
+  if(invalidText.show) return;
   hardInvalidText.display();
+  if(hardInvalidText.show) return;
+  modeText.display();
+  if(modeText.show) return;
   endText.display();
 }
 
