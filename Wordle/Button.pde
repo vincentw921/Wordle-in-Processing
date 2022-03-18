@@ -1,5 +1,6 @@
 public enum ButtonType {
   RETRY,
+  HARD,
   GRAPH;
 }
 
@@ -34,8 +35,9 @@ class Button { //radial button
     } 
     if(active) {
       noFill();
-      stroke(correctColor);
-      strokeWeight(3);
+      if(bType == ButtonType.GRAPH) stroke(correctColor);
+      if(bType == ButtonType.HARD) stroke(closeColor);
+      strokeWeight(5);
       circle(x, y, r*2);
     }
   }
@@ -54,6 +56,11 @@ class Button { //radial button
       if (dist(mouseX, mouseY, x,y) <= r) {
         active = !active;
         graph.show = active;
+      }
+    } else if (bType == ButtonType.HARD) {
+      if (dist(mouseX,mouseY,x,y) <= r) {
+        active = !active;
+        hardMode = active;
       }
     }
   }
