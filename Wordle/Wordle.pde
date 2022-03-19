@@ -13,11 +13,11 @@
 
 public enum GameState {
   ONGOING,
-    DEFEAT,
-    VICTORY;
+  DEFEAT,
+  VICTORY;
 }
 
-int tileSideLength, guessNum, charNum, invalidCount, padding;
+int tileSideLength, guessNum, charNum, padding;
 String ans, retryButtonFile, graphButtonFile, hardButtonFile, practiceButtonFile, saveFile, dailyWordsFile, answerWordsFile, inputWordsFile, dailyWord;
 color bgColor, correctColor, closeColor, incorrectColor, guessingColor, keyColor, graphColor, graphBorderColor, buttonBaseColor;
 boolean hardMode, wordleDone, practiceMode;
@@ -27,7 +27,7 @@ PFont text, title, graphFont;
 Tile[][] tiles;
 GameState gState;
 Key[] keyboard;
-TextBox invalidText, hardInvalidText, endText, modeText, dailyWordleDone, practiceText;
+TextBox invalidText, hardValidText, endText, modeText, dailyWordleDone, practiceText;
 Button retryButton, graphButton, hardButton, practiceButton;
 Graph graph;
 
@@ -66,15 +66,13 @@ void setup() {
 
   guessNum = 0;
   charNum = 0;
-  invalidCount = 0;
   ans = answerWords[int(random(answerWords.length))];
   retryButtonFile = "retry.png";
   graphButtonFile = "graph.png";
   hardButtonFile = "hard.png";
   practiceButtonFile = "target.png";
-dailyWords = loadStrings(dailyWordsFile);
+  dailyWords = loadStrings(dailyWordsFile);
   if (!wordleDone) { //if wordle hasn't been done for the day, set ans to daily word
-    
     dailyWord = dailyWords[0];
     ans = dailyWord;
   }
@@ -121,7 +119,7 @@ dailyWords = loadStrings(dailyWordsFile);
   //initializes text box for when needed
   dailyWordleDone = new TextBox("", 50, height / 5, width - 100, 500);
   invalidText = new TextBox("Invalid word!", 150, height / 5, width - 300, 100);
-  hardInvalidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
+  hardValidText = new TextBox("Must use all letters from previous attempts", 50, height / 5, width - 100, 100);
   endText = new TextBox("this only appears if the game ends", 150, height / 5, width - 300, 100);
   modeText = new TextBox("Hard mode?", 150, height / 5, width - 300, 100);
   practiceText = new TextBox("Practice mode?", 150, height / 5, width - 300, 100);
@@ -172,8 +170,8 @@ void draw() {
   practiceButton.display();
   invalidText.display();
   if (invalidText.show) return;
-  hardInvalidText.display();
-  if (hardInvalidText.show) return;
+  hardValidText.display();
+  if (hardValidText.show) return;
   modeText.display();
   if (modeText.show) return;
   practiceText.display();
@@ -296,6 +294,9 @@ void kbPressed() {
 void checkInputKey(char c) {
   if (wordleDone && !practiceMode) return;
   //if the game isn't running, dont check for keyboard inputs
+  if (gState == GameState.DEFEAT && c == '\n') {
+    endText.displayStart(frameRate * 1, frameRate * 0.5);
+  }
   if (gState != GameState.ONGOING) return;
   //if enter key is pressed, make sure the input is valid before checking it.
   if (c == '\n') {
@@ -311,14 +312,13 @@ void checkInputKey(char c) {
       totalAttempts++;
       curStreak++;
       //changes the daily word
-      println("changedd");
       for (int i = 0; i < dailyWords.length-1; i++) {
         dailyWords[i] = dailyWords[i+1];
       }
       dailyWords[dailyWords.length-1] = dailyWord;
       PrintWriter dailyPw = createWriter(dailyWordsFile);
       for (String s : dailyWords) dailyPw.println(s);
-      
+
       writer = createWriter(saveFile);
       writer.println(totalAttempts);
       for (int i : winCounts) {
@@ -360,10 +360,7 @@ void checkInputKey(char c) {
     tiles[guessNum][charNum-1].ch = ' ';
     tiles[guessNum][charNum-1].tState = TileState.NOT_GUESSED;
     charNum--;
-  } /*else if (c == ' ') { //shows the answer
-   println("Answer: " + ans);
-   }*/
-  else {
+  } else {
     //Ensures the inputted key is from A-Z, then inputs that into the tile
     if ((Character.toLowerCase(c) >= 97 && Character.toLowerCase(c) <= 122) && charNum < 5) {
       tiles[guessNum][charNum].ch = Character.toUpperCase(c);
@@ -379,53 +376,57 @@ boolean checkGuess() {
   for (int i = 0; i < tiles[guessNum].length; i++) guess += tiles[guessNum][i].ch;
   guess = guess.toLowerCase();
 
-  //checks if guess was valid, based on input-words.txt
   boolean valid = false;
+  boolean hardValid = true;
 
-  boolean hardInvalid = false;
+  //checks if guess was valid, based on input-words.txt
   for (String s : inputWords) {
     if (s.equals(guess)) {
       valid = true;
       break;
     }
   }
-  if (hardMode && guessNum > 0) {
-    for (int i = 0; i < tiles[0].length; i++) {
-      if (tiles[guessNum-1][i].tState == TileState.CORRECT_PLACE && tiles[guessNum-1][i].ch != guess.charAt(i)) {
-        valid = false;
-        hardInvalid = true;
-        break;
-      }
-      if (tiles[guessNum-1][i].tState == TileState.CORRECT_LETTER) {
-        boolean hasLetter = false;
-        for (int c = 0; c < guess.length(); c++) {
-          if (tiles[guessNum-1][i].ch == guess.charAt(c)) {
-            hasLetter = true;
-          }
-        }
-        if (!hasLetter) {
-          hardInvalid = true;
-          valid = false;
-          break;
-        }
-      }
-    }
-  }
-
   if (!valid) {
-    invalidCount++;
     for (Tile t : tiles[guessNum]) {
       t.ch = ' ';
       t.tState = TileState.NOT_GUESSED;
     }
-    if (!hardInvalid) {
-      invalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
-    } else {
-      hardInvalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
-    }
+    invalidText.displayStart(frameRate * 1.1, frameRate * 0.4);
     guessNum--;
     return false;
   }
+  guess = guess.toUpperCase();
+  //now it checks the letters compared to the answer for hard mode
+  if (hardMode && guessNum > 0) {
+    for (int i = 0; i < tiles[guessNum-1].length; i++) {
+      if (tiles[guessNum-1][i].tState == TileState.CORRECT_PLACE) {
+        if (guess.charAt(i) != tiles[guessNum-1][i].ch) {
+          hardValid = false;
+          break;
+        }
+      } else if (tiles[guessNum-1][i].tState == TileState.CORRECT_LETTER) {
+        hardValid = false;
+        for (int j = 0; j < guess.length(); j++) {
+          if (guess.charAt(j) == tiles[guessNum-1][i].ch) {
+            hardValid = true;
+            break;
+          }
+        }
+        if (!hardValid) break;
+      }
+    }
+  }
+
+  if (!hardValid) {
+    for (Tile t : tiles[guessNum]) {
+      t.ch = ' ';
+      t.tState = TileState.NOT_GUESSED;
+    }
+    hardValidText.displayStart(frameRate * 1.1, frameRate * 0.4);
+    guessNum--;
+    return false;
+  }
+  guess = guess.toLowerCase();
 
   //now checks each character with answer, starting by marking each tile as writerong before updating the correct ones
   for (int i = 0; i < tiles[0].length; i++) tiles[guessNum][i].tState = TileState.GUESSED;

@@ -36,7 +36,7 @@ public class Graph {
     text("Current Streak: " + curStreak + "  Max Streak: " + maxStreak, width / 2, y1 + 110);
     for (int i = 1; i <= 6; i++) {//draws the 6 bars, along with the text
       noStroke();
-      if (guessNum == i && gState == GameState.VICTORY) {
+      if (guessNum == i && gState == GameState.VICTORY && !practiceMode) {
         fill(correctColor);
       } else {
         fill(incorrectColor);

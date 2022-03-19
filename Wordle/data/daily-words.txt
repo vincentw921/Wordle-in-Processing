@@ -1,4 +1,3 @@
-parse
 swami
 stake
 friar
@@ -1169,3 +1168,4 @@ notch
 yearn
 quest
 swear
+parse

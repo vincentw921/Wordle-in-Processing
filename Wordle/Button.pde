@@ -69,21 +69,21 @@ class Button { //radial button
       }
     } else if (bType == ButtonType.PRACTICE) {
       if (dist(mouseX, mouseY, x, y) <= r) {
-        if(gState != GameState.ONGOING) return;
+        if (gState != GameState.ONGOING) return;
         active = !active;
         practiceMode = active;
         //reset answer & tiles
         guessNum = 0;
         charNum = 0;
         ans = !practiceMode ? dailyWord : answerWords[int(random(answerWords.length))];
-        for(Tile[] tRow : tiles) for(Tile t : tRow){
+        for (Tile[] tRow : tiles) for (Tile t : tRow) {
           t.startFrame = 0;
           t.animateTime = 0;
           t.animate = false;
           t.tState = TileState.NOT_GUESSED;
           t.ch = ' ';
         }
-        for(Key k : keyboard){
+        for (Key k : keyboard) {
           k.c = keyColor;
           k.kState = KeyState.NOT_GUESSED;
         }
